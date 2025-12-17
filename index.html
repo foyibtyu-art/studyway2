@@ -7,12 +7,8 @@
 <meta name="app-version" content="1.0.2">
 <title>Study Way 2</title>
 
-<!-- ===== PWA ===== -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b1f33">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
 <style>
 :root{
@@ -21,12 +17,16 @@
   --main:#0a58ca;
   --text:#ffffff;
 }
+
 body{
   margin:0;
   font-family:Arial;
   background:var(--bg);
   color:var(--text);
+  overflow-x:hidden;
 }
+
+/* ===== HEADER ===== */
 .header{
   background:var(--main);
   padding:15px;
@@ -35,13 +35,24 @@ body{
   align-items:center;
   font-weight:bold;
 }
+.back{
+  cursor:pointer;
+  font-size:22px;
+}
+
+/* ===== CLOCK ===== */
 .clock{
   text-align:center;
-  font-size:28px;
+  font-size:32px;
   font-weight:bold;
   margin:15px 0;
 }
-.subclock{font-size:14px;opacity:.8;}
+.subclock{
+  font-size:14px;
+  opacity:.8;
+}
+
+/* ===== HOME ===== */
 .container{
   padding:15px;
   display:grid;
@@ -51,41 +62,93 @@ body{
 .card{
   background:var(--card);
   color:#000;
-  border-radius:16px;
+  border-radius:18px;
   padding:30px 10px;
   text-align:center;
   cursor:pointer;
   font-size:18px;
 }
-.page{display:none;padding:15px}
+.wide{
+  grid-column:1 / span 2;
+}
+
+/* ===== PAGES ===== */
+.page{
+  display:none;
+  padding:15px;
+}
+
+/* ===== FORMS ===== */
 textarea,input,button{
   width:100%;
   padding:10px;
   margin-top:10px;
   border-radius:8px;
 }
-button{background:var(--main);color:white;border:none;}
+button{
+  background:var(--main);
+  color:white;
+  border:none;
+}
+
+/* ===== ITEMS ===== */
 .item{
-  background:#fff;color:#000;padding:10px;margin-top:10px;
-  border-radius:10px;position:relative;
+  background:#fff;
+  color:#000;
+  padding:10px;
+  margin-top:10px;
+  border-radius:10px;
+  position:relative;
 }
 .delete{
-  position:absolute;top:5px;left:5px;
-  background:red;color:white;border:none;border-radius:6px;
+  position:absolute;
+  top:5px;
+  left:5px;
+  background:red;
+  color:white;
+  border:none;
+  border-radius:6px;
 }
+
+/* ===== BATTLE ===== */
 .battle{
-  background:linear-gradient(135deg,#ff5722,#ff9800);
-  padding:20px;border-radius:18px;text-align:center;margin:15px;
+  background:var(--main);
+  color:white;
+  padding:25px;
+  border-radius:20px;
+  text-align:center;
+  margin:15px;
 }
-.countdown{font-size:22px;margin-top:10px;}
-.footer{text-align:center;padding:15px;font-size:14px;opacity:.9;}
+.countdown{
+  font-size:22px;
+  margin-top:10px;
+}
+
+/* ===== FOOTER ===== */
+.footer{
+  text-align:center;
+  padding:15px;
+  font-size:14px;
+  opacity:.9;
+}
 .footer button{
   background:none;
   border:none;
   color:#4fc3f7;
-  font-size:14px;
   font-weight:bold;
   cursor:pointer;
+}
+
+/* ===== SNOW ===== */
+.snowflake{
+  position:fixed;
+  top:-10px;
+  color:white;
+  pointer-events:none;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(110vh);}
 }
 </style>
 </head>
@@ -93,25 +156,34 @@ button{background:var(--main);color:white;border:none;}
 <body>
 
 <div class="header">
-  <span onclick="home()">⬅️</span>
-  <span>📘 Study Way 2 v1.0.2</span>
+  <span class="back" onclick="home()">←</span>
+  <span>Study Way 2 v1.0.2</span>
   <span onclick="settings()">⚙️</span>
 </div>
 
-<div class="clock" id="clock">00:00:00
+<div class="clock" id="clock">
+  00:00:00
   <div class="subclock" id="date"></div>
 </div>
 
+<!-- ===== HOME ===== -->
 <div id="home" class="container">
   <div class="card" onclick="openProgram()">💻 التخطيط</div>
   <div class="card" onclick="openApp()">📱 التنفيذ</div>
+
+  <div class="card wide" onclick="openLessons()">📚 الملخصات</div>
+  <div class="card wide" onclick="openBattle()">⚔️ تحدي الفصل</div>
 </div>
 
-<div class="battle">
-  ⚔️ معركة الفصل
-  <div class="countdown" id="countdown"></div>
+<!-- ===== BATTLE ===== -->
+<div id="battle" class="page">
+  <div class="battle">
+    ⚔️ معركة الفصل
+    <div class="countdown" id="countdown"></div>
+  </div>
 </div>
 
+<!-- ===== PROGRAM ===== -->
 <div id="program" class="page">
   <h3>🧠 الخطط</h3>
   <input id="planText" placeholder="اسم الخطة">
@@ -120,6 +192,7 @@ button{background:var(--main);color:white;border:none;}
   <div id="plans"></div>
 </div>
 
+<!-- ===== DONE ===== -->
 <div id="app" class="page">
   <h3>✅ ما تم إنجازه</h3>
   <textarea id="doneText"></textarea>
@@ -127,11 +200,20 @@ button{background:var(--main);color:white;border:none;}
   <div id="doneList"></div>
 </div>
 
+<!-- ===== LESSONS ===== -->
+<div id="lessons" class="page">
+  <h3>📚 الملخصات والدروس</h3>
+  <textarea id="lessonText" placeholder="اكتب ملخص أو درس"></textarea>
+  <button onclick="addLesson()">حفظ</button>
+  <div id="lessonList"></div>
+</div>
+
+<!-- ===== SETTINGS ===== -->
 <div id="settings" class="page">
   <h3>🎨 السمات</h3>
-  <button onclick="theme('#2b0b0b','#ff5722')">🔥 ناري</button>
-  <button onclick="theme('#0b1f33','#1e88e5')">❄️ ثلجي</button>
-  <button onclick="theme('#1c1c1c','#d4af37')">🟨 ذهبي</button>
+  <button onclick="theme('fire')">🔥 ناري</button>
+  <button onclick="theme('ice')">❄️ ثلجي</button>
+  <button onclick="theme('gold')">🟨 ذهبي</button>
 </div>
 
 <div class="footer">
@@ -139,21 +221,13 @@ button{background:var(--main);color:white;border:none;}
 </div>
 
 <script>
-/* ===== Service Worker ===== */
-if ("serviceWorker" in navigator) {
+/* ===== SW ===== */
+if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js");
 }
 
-/* ===== فتح الموقع ===== */
-function openSite(){
-  window.open(
-    "https://sites.google.com/view/studywayschool/%D8%A7%D9%84%D8%B5%D9%81%D8%AD%D8%A9-%D8%A7%D9%84%D8%B1%D8%A6%D9%8A%D8%B3%D9%8A%D8%A9",
-    "_blank"
-  );
-}
-
-/* ===== التنقل ===== */
-const pages=["home","program","app","settings"];
+/* ===== NAV ===== */
+const pages=["home","program","app","settings","lessons","battle"];
 function show(id){
   pages.forEach(p=>document.getElementById(p).style.display="none");
   document.getElementById(id).style.display=id==="home"?"grid":"block";
@@ -161,9 +235,11 @@ function show(id){
 function home(){show("home")}
 function openProgram(){show("program")}
 function openApp(){show("app")}
+function openLessons(){show("lessons")}
+function openBattle(){show("battle")}
 function settings(){show("settings")}
 
-/* ===== الساعة ===== */
+/* ===== CLOCK ===== */
 function updateClock(){
   const n=new Date();
   clock.textContent=n.toLocaleTimeString();
@@ -171,7 +247,7 @@ function updateClock(){
 }
 setInterval(updateClock,1000);updateClock();
 
-/* ===== العد التنازلي ===== */
+/* ===== COUNTDOWN ===== */
 function updateCountdown(){
   const now=new Date();
   let target=new Date(now.getFullYear(),0,7);
@@ -181,10 +257,11 @@ function updateCountdown(){
 }
 setInterval(updateCountdown,1000);updateCountdown();
 
-/* ===== الخطط ===== */
+/* ===== DATA ===== */
 function addPlan(){
   if(!planText.value||!planTime.value)return;
-  plans.innerHTML+=`<div class="item">
+  plans.innerHTML+=`
+  <div class="item">
     <button class="delete" onclick="this.parentElement.remove()">X</button>
     ${planText.value} ⏰ ${planTime.value}
   </div>`;
@@ -192,15 +269,62 @@ function addPlan(){
 }
 function addDone(){
   if(!doneText.value)return;
-  doneList.innerHTML+=`<div class="item">
+  doneList.innerHTML+=`
+  <div class="item">
     <button class="delete" onclick="this.parentElement.remove()">X</button>
     ${doneText.value}
   </div>`;
   doneText.value="";
 }
-function theme(bg,main){
+function addLesson(){
+  if(!lessonText.value)return;
+  lessonList.innerHTML+=`
+  <div class="item">
+    <button class="delete" onclick="this.parentElement.remove()">X</button>
+    ${lessonText.value}
+  </div>`;
+  lessonText.value="";
+}
+
+/* ===== THEMES + SNOW ===== */
+let snowInterval=null;
+
+function theme(type){
+  clearInterval(snowInterval);
+  document.querySelectorAll(".snowflake").forEach(e=>e.remove());
+
+  if(type==="fire"){
+    applyTheme("#2b0b0b","#ff5722");
+  }
+  if(type==="ice"){
+    applyTheme("#0b1f33","#1e88e5");
+    snowInterval=setInterval(createSnow,250);
+  }
+  if(type==="gold"){
+    applyTheme("#1c1c1c","#d4af37");
+  }
+}
+
+function applyTheme(bg,main){
   document.documentElement.style.setProperty("--bg",bg);
   document.documentElement.style.setProperty("--main",main);
+}
+
+function createSnow(){
+  const s=document.createElement("div");
+  s.className="snowflake";
+  s.textContent="❄";
+  s.style.left=Math.random()*100+"vw";
+  s.style.fontSize=10+Math.random()*12+"px";
+  s.style.opacity=Math.random();
+  s.style.animationDuration=3+Math.random()*5+"s";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),9000);
+}
+
+/* ===== SITE ===== */
+function openSite(){
+  window.open("https://sites.google.com/view/studywayschool","_blank");
 }
 </script>
 
