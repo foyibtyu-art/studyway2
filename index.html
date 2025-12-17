@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="app-version" content="1.0.1">
+<meta name="app-version" content="1.0.2">
 <title>Study Way 2</title>
 
 <!-- ===== PWA ===== -->
@@ -78,8 +78,15 @@ button{background:var(--main);color:white;border:none;}
   padding:20px;border-radius:18px;text-align:center;margin:15px;
 }
 .countdown{font-size:22px;margin-top:10px;}
-.footer{text-align:center;padding:15px;font-size:14px;opacity:.8;}
-.footer a{color:#4fc3f7;text-decoration:none;font-weight:bold;}
+.footer{text-align:center;padding:15px;font-size:14px;opacity:.9;}
+.footer button{
+  background:none;
+  border:none;
+  color:#4fc3f7;
+  font-size:14px;
+  font-weight:bold;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -87,7 +94,7 @@ button{background:var(--main);color:white;border:none;}
 
 <div class="header">
   <span onclick="home()">⬅️</span>
-  <span>📘 Study Way 2 v1.0.1</span>
+  <span>📘 Study Way 2 v1.0.2</span>
   <span onclick="settings()">⚙️</span>
 </div>
 
@@ -128,7 +135,7 @@ button{background:var(--main);color:white;border:none;}
 </div>
 
 <div class="footer">
-  🌐 <a href="https://8-cmyk.github.io" target="_blank">موقعنا الرسمي</a>
+  🌐 <button onclick="openSite()">موقعنا الرسمي</button>
 </div>
 
 <script>
@@ -137,30 +144,13 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
 
-/* ===== Install App ===== */
-let deferredPrompt;
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-
-  const btn = document.createElement("button");
-  btn.textContent = "📲 تثبيت التطبيق";
-  btn.style.position = "fixed";
-  btn.style.bottom = "20px";
-  btn.style.right = "20px";
-  btn.style.zIndex = "999";
-  btn.style.padding = "12px";
-  btn.style.borderRadius = "12px";
-  btn.style.background = "#4fc3f7";
-  btn.style.border = "none";
-
-  btn.onclick = async () => {
-    deferredPrompt.prompt();
-    deferredPrompt = null;
-    btn.remove();
-  };
-  document.body.appendChild(btn);
-});
+/* ===== فتح الموقع ===== */
+function openSite(){
+  window.open(
+    "https://sites.google.com/view/studywayschool/%D8%A7%D9%84%D8%B5%D9%81%D8%AD%D8%A9-%D8%A7%D9%84%D8%B1%D8%A6%D9%8A%D8%B3%D9%8A%D8%A9",
+    "_blank"
+  );
+}
 
 /* ===== التنقل ===== */
 const pages=["home","program","app","settings"];
@@ -215,4 +205,4 @@ function theme(bg,main){
 </script>
 
 </body>
-  </html>
+</html>
