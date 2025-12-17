@@ -3,30 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<meta name="app-version" content="1.0.2">
 <title>Study Way 2</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b1f33">
 
 <style>
 :root{
   --bg:#0b1f33;
+  --main:#1e88e5;
   --card:#ffffff;
-  --main:#0a58ca;
   --text:#ffffff;
+  --cardText:#000000;
 }
 
+/* ===== BASE ===== */
 body{
   margin:0;
   font-family:Arial;
   background:var(--bg);
   color:var(--text);
   overflow-x:hidden;
+  transition:.3s;
 }
 
-/* ===== HEADER ===== */
 .header{
   background:var(--main);
   padding:15px;
@@ -35,22 +32,17 @@ body{
   align-items:center;
   font-weight:bold;
 }
-.back{
-  cursor:pointer;
-  font-size:22px;
-}
+
+.back{cursor:pointer;font-size:22px}
 
 /* ===== CLOCK ===== */
 .clock{
   text-align:center;
-  font-size:32px;
+  font-size:30px;
   font-weight:bold;
   margin:15px 0;
 }
-.subclock{
-  font-size:14px;
-  opacity:.8;
-}
+.subclock{font-size:14px;opacity:.8}
 
 /* ===== HOME ===== */
 .container{
@@ -59,96 +51,56 @@ body{
   grid-template-columns:1fr 1fr;
   gap:15px;
 }
+
 .card{
   background:var(--card);
-  color:#000;
+  color:var(--cardText);
   border-radius:18px;
   padding:30px 10px;
   text-align:center;
-  cursor:pointer;
   font-size:18px;
+  cursor:pointer;
+  transition:.3s;
 }
-.wide{
-  grid-column:1 / span 2;
-}
+
+.wide{grid-column:1 / span 2}
 
 /* ===== PAGES ===== */
-.page{
-  display:none;
-  padding:15px;
-}
+.page{display:none;padding:15px}
 
-/* ===== FORMS ===== */
-textarea,input,button{
+/* ===== BUTTONS ===== */
+button{
   width:100%;
   padding:10px;
   margin-top:10px;
   border-radius:8px;
-}
-button{
+  border:none;
   background:var(--main);
   color:white;
-  border:none;
-}
-
-/* ===== ITEMS ===== */
-.item{
-  background:#fff;
-  color:#000;
-  padding:10px;
-  margin-top:10px;
-  border-radius:10px;
-  position:relative;
-}
-.delete{
-  position:absolute;
-  top:5px;
-  left:5px;
-  background:red;
-  color:white;
-  border:none;
-  border-radius:6px;
+  font-size:15px;
 }
 
 /* ===== BATTLE ===== */
 .battle{
   background:var(--main);
-  color:white;
   padding:25px;
   border-radius:20px;
   text-align:center;
   margin:15px;
 }
-.countdown{
-  font-size:22px;
-  margin-top:10px;
-}
-
-/* ===== FOOTER ===== */
-.footer{
-  text-align:center;
-  padding:15px;
-  font-size:14px;
-  opacity:.9;
-}
-.footer button{
-  background:none;
-  border:none;
-  color:#4fc3f7;
-  font-weight:bold;
-  cursor:pointer;
-}
+.countdown{font-size:22px;margin-top:10px}
 
 /* ===== SNOW ===== */
-.snowflake{
+.snow{
   position:fixed;
-  top:-10px;
-  color:white;
+  top:-20px;
   pointer-events:none;
-  animation:fall linear infinite;
+  z-index:9999;
+  animation:fall linear forwards;
 }
+
 @keyframes fall{
-  to{transform:translateY(110vh);}
+  to{transform:translateY(110vh)}
 }
 </style>
 </head>
@@ -156,9 +108,9 @@ button{
 <body>
 
 <div class="header">
-  <span class="back" onclick="home()">←</span>
-  <span>Study Way 2 v1.0.2</span>
-  <span onclick="settings()">⚙️</span>
+  <span class="back" onclick="show('home')">←</span>
+  <span>Study Way 2</span>
+  <span onclick="show('settings')">⚙️</span>
 </div>
 
 <div class="clock" id="clock">
@@ -166,16 +118,15 @@ button{
   <div class="subclock" id="date"></div>
 </div>
 
-<!-- ===== HOME ===== -->
+<!-- HOME -->
 <div id="home" class="container">
-  <div class="card" onclick="openProgram()">💻 التخطيط</div>
-  <div class="card" onclick="openApp()">📱 التنفيذ</div>
-
-  <div class="card wide" onclick="openLessons()">📚 الملخصات</div>
-  <div class="card wide" onclick="openBattle()">⚔️ تحدي الفصل</div>
+  <div class="card">💻 التخطيط</div>
+  <div class="card">📱 التنفيذ</div>
+  <div class="card wide">📚 الملخصات</div>
+  <div class="card wide" onclick="show('battle')">⚔️ تحدي الفصل</div>
 </div>
 
-<!-- ===== BATTLE ===== -->
+<!-- BATTLE -->
 <div id="battle" class="page">
   <div class="battle">
     ⚔️ معركة الفصل
@@ -183,61 +134,22 @@ button{
   </div>
 </div>
 
-<!-- ===== PROGRAM ===== -->
-<div id="program" class="page">
-  <h3>🧠 الخطط</h3>
-  <input id="planText" placeholder="اسم الخطة">
-  <input type="time" id="planTime">
-  <button onclick="addPlan()">إضافة</button>
-  <div id="plans"></div>
-</div>
-
-<!-- ===== DONE ===== -->
-<div id="app" class="page">
-  <h3>✅ ما تم إنجازه</h3>
-  <textarea id="doneText"></textarea>
-  <button onclick="addDone()">حفظ</button>
-  <div id="doneList"></div>
-</div>
-
-<!-- ===== LESSONS ===== -->
-<div id="lessons" class="page">
-  <h3>📚 الملخصات والدروس</h3>
-  <textarea id="lessonText" placeholder="اكتب ملخص أو درس"></textarea>
-  <button onclick="addLesson()">حفظ</button>
-  <div id="lessonList"></div>
-</div>
-
-<!-- ===== SETTINGS ===== -->
+<!-- SETTINGS -->
 <div id="settings" class="page">
   <h3>🎨 السمات</h3>
-  <button onclick="theme('fire')">🔥 ناري</button>
-  <button onclick="theme('ice')">❄️ ثلجي</button>
-  <button onclick="theme('gold')">🟨 ذهبي</button>
-</div>
-
-<div class="footer">
-  🌐 <button onclick="openSite()">موقعنا الرسمي</button>
+  <button onclick="setTheme('fire')">🔥 ناري</button>
+  <button onclick="setTheme('ice')">❄️ ثلجي</button>
+  <button onclick="setTheme('gold')">🟨 ذهبي</button>
+  <button onclick="setTheme('purple')">🟣 أرجواني</button>
 </div>
 
 <script>
-/* ===== SW ===== */
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-}
-
 /* ===== NAV ===== */
-const pages=["home","program","app","settings","lessons","battle"];
+const pages=["home","battle","settings"];
 function show(id){
   pages.forEach(p=>document.getElementById(p).style.display="none");
   document.getElementById(id).style.display=id==="home"?"grid":"block";
 }
-function home(){show("home")}
-function openProgram(){show("program")}
-function openApp(){show("app")}
-function openLessons(){show("lessons")}
-function openBattle(){show("battle")}
-function settings(){show("settings")}
 
 /* ===== CLOCK ===== */
 function updateClock(){
@@ -252,79 +164,60 @@ function updateCountdown(){
   const now=new Date();
   let target=new Date(now.getFullYear(),0,7);
   if(now>target) target=new Date(now.getFullYear()+1,0,7);
-  const diff=target-now;
-  countdown.textContent=Math.floor(diff/86400000)+" يوم";
+  countdown.textContent=Math.floor((target-now)/86400000)+" يوم";
 }
 setInterval(updateCountdown,1000);updateCountdown();
 
-/* ===== DATA ===== */
-function addPlan(){
-  if(!planText.value||!planTime.value)return;
-  plans.innerHTML+=`
-  <div class="item">
-    <button class="delete" onclick="this.parentElement.remove()">X</button>
-    ${planText.value} ⏰ ${planTime.value}
-  </div>`;
-  planText.value="";planTime.value="";
-}
-function addDone(){
-  if(!doneText.value)return;
-  doneList.innerHTML+=`
-  <div class="item">
-    <button class="delete" onclick="this.parentElement.remove()">X</button>
-    ${doneText.value}
-  </div>`;
-  doneText.value="";
-}
-function addLesson(){
-  if(!lessonText.value)return;
-  lessonList.innerHTML+=`
-  <div class="item">
-    <button class="delete" onclick="this.parentElement.remove()">X</button>
-    ${lessonText.value}
-  </div>`;
-  lessonText.value="";
-}
+/* ===== THEMES ===== */
+let snowInt=null;
 
-/* ===== THEMES + SNOW ===== */
-let snowInterval=null;
+function setTheme(t){
+  clearInterval(snowInt);
+  document.querySelectorAll(".snow").forEach(e=>e.remove());
 
-function theme(type){
-  clearInterval(snowInterval);
-  document.querySelectorAll(".snowflake").forEach(e=>e.remove());
+  if(t==="fire")
+    apply("#2b0b0b","#ff5722","#3b0d0d","#ffd6c9","#ffd6c9");
 
-  if(type==="fire"){
-    applyTheme("#2b0b0b","#ff5722");
+  if(t==="ice"){
+    apply("#0b1f33","#1e88e5","#e3f2fd","#003344","#000");
+    snowInt=setInterval(makeSnow,200);
   }
-  if(type==="ice"){
-    applyTheme("#0b1f33","#1e88e5");
-    snowInterval=setInterval(createSnow,250);
-  }
-  if(type==="gold"){
-    applyTheme("#1c1c1c","#d4af37");
-  }
+
+  if(t==="gold")
+    apply("#1c1c1c","#d4af37","#2b2400","#ffdd66","#ffdd66");
+
+  if(t==="purple")
+    apply("#2a083d","#7b1fa2","#ede7f6","#e6b3ff","#000");
+
+  localStorage.setItem("theme",t);
 }
 
-function applyTheme(bg,main){
-  document.documentElement.style.setProperty("--bg",bg);
-  document.documentElement.style.setProperty("--main",main);
+function apply(bg,main,card,text,cardText){
+  const r=document.documentElement.style;
+  r.setProperty("--bg",bg);
+  r.setProperty("--main",main);
+  r.setProperty("--card",card);
+  r.setProperty("--text",text);
+  r.setProperty("--cardText",cardText);
 }
 
-function createSnow(){
+/* ===== LOAD THEME ===== */
+window.onload=()=>{
+  const t=localStorage.getItem("theme");
+  if(t) setTheme(t);
+}
+
+/* ===== SNOW ===== */
+function makeSnow(){
   const s=document.createElement("div");
-  s.className="snowflake";
-  s.textContent="❄";
+  s.className="snow";
+  s.textContent=Math.random()>0.5?"❄":"✦";
   s.style.left=Math.random()*100+"vw";
-  s.style.fontSize=10+Math.random()*12+"px";
+  s.style.fontSize=10+Math.random()*14+"px";
   s.style.opacity=Math.random();
   s.style.animationDuration=3+Math.random()*5+"s";
   document.body.appendChild(s);
   setTimeout(()=>s.remove(),9000);
-}
-
-/* ===== SITE ===== */
-function openSite(){
-  window.open("https://sites.google.com/view/studywayschool","_blank");
 }
 </script>
 
