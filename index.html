@@ -35,6 +35,13 @@ body{
   align-items:center;
   font-weight:bold;
 }
+
+/* العنوان الرئيسي فقط */
+.title{
+  font-size:18px;
+  font-weight:bold;
+}
+
 .clock{
   text-align:center;
   font-size:28px;
@@ -94,7 +101,7 @@ button{background:var(--main);color:white;border:none;}
 
 <div class="header">
   <span onclick="home()">⬅️</span>
-  <span>📘 Study Way 2 v1.0.2</span>
+  <span class="title">📘 Study Way</span>
   <span onclick="settings()">⚙️</span>
 </div>
 
@@ -139,12 +146,10 @@ button{background:var(--main);color:white;border:none;}
 </div>
 
 <script>
-/* ===== Service Worker ===== */
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
 
-/* ===== فتح الموقع ===== */
 function openSite(){
   window.open(
     "https://sites.google.com/view/studywayschool/%D8%A7%D9%84%D8%B5%D9%81%D8%AD%D8%A9-%D8%A7%D9%84%D8%B1%D8%A6%D9%8A%D8%B3%D9%8A%D8%A9",
@@ -152,7 +157,6 @@ function openSite(){
   );
 }
 
-/* ===== التنقل ===== */
 const pages=["home","program","app","settings"];
 function show(id){
   pages.forEach(p=>document.getElementById(p).style.display="none");
@@ -163,7 +167,6 @@ function openProgram(){show("program")}
 function openApp(){show("app")}
 function settings(){show("settings")}
 
-/* ===== الساعة ===== */
 function updateClock(){
   const n=new Date();
   clock.textContent=n.toLocaleTimeString();
@@ -171,7 +174,6 @@ function updateClock(){
 }
 setInterval(updateClock,1000);updateClock();
 
-/* ===== العد التنازلي ===== */
 function updateCountdown(){
   const now=new Date();
   let target=new Date(now.getFullYear(),0,7);
@@ -181,7 +183,6 @@ function updateCountdown(){
 }
 setInterval(updateCountdown,1000);updateCountdown();
 
-/* ===== الخطط ===== */
 function addPlan(){
   if(!planText.value||!planTime.value)return;
   plans.innerHTML+=`<div class="item">
