@@ -16,6 +16,7 @@
   --main:#0a58ca;
   --text:#ffffff;
 }
+
 body{
   margin:0;
   font-family:Arial;
@@ -23,7 +24,6 @@ body{
   color:var(--text);
 }
 
-/* ===== الأساس ===== */
 .header{
   background:var(--main);
   padding:15px;
@@ -32,15 +32,23 @@ body{
   align-items:center;
   font-weight:bold;
 }
+
 .title{font-size:18px}
-.clock{text-align:center;font-size:28px;margin:15px 0}
+
+.clock{
+  text-align:center;
+  font-size:28px;
+  margin:15px 0;
+}
 .subclock{font-size:14px;opacity:.8}
+
 .container{
   padding:15px;
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:15px;
 }
+
 .card{
   background:var(--card);
   color:#000;
@@ -48,66 +56,55 @@ body{
   padding:30px 10px;
   text-align:center;
   cursor:pointer;
+  position:relative;
+  user-select:none;
 }
+
 .page{display:none;padding:15px}
+
 textarea,input,button{
   width:100%;
   padding:10px;
   margin-top:10px;
   border-radius:8px;
 }
-button{background:var(--main);color:white;border:none}
+
+button{
+  background:var(--main);
+  color:white;
+  border:none;
+}
+
 .item{
-  background:#fff;color:#000;padding:10px;margin-top:10px;
-  border-radius:10px;position:relative;
+  background:#fff;
+  color:#000;
+  padding:10px;
+  margin-top:10px;
+  border-radius:10px;
 }
-.delete{
-  position:absolute;top:5px;left:5px;
-  background:red;color:white;border:none;
-}
+
 .battle{
   background:linear-gradient(135deg,#ff5722,#ff9800);
-  padding:20px;border-radius:18px;margin:15px;text-align:center;
-}
-.footer{text-align:center;padding:15px}
-
-/* ===== رمضان ===== */
-.ramadan-bg{
-  background:linear-gradient(180deg,#fff8c4,#ffd54f);
-}
-.ramadan-bg::after{
-  content:"☾";
-  position:fixed;
-  top:20px;
-  right:20px;
-  font-size:90px;
-  color:rgba(255,193,7,.6);
-  pointer-events:none;
-}
-.ramadan-btn{
-  background:linear-gradient(135deg,#ffeb3b,#ffc107)!important;
-  color:#3b2a00!important;
-}
-.lantern{
-  position:fixed;
-  top:-50px;
-  font-size:26px;
-  animation:fall 10s linear infinite;
-  pointer-events:none;
+  padding:20px;
+  border-radius:18px;
+  margin:15px;
+  text-align:center;
 }
 
-/* ===== ثلج ===== */
-.snowflake{
-  position:fixed;
-  top:-40px;
-  font-size:20px;
-  animation:fall 9s linear infinite;
-  pointer-events:none;
-  opacity:.9;
+/* ===== يد أنمي (بدون تأثير على اللمس) ===== */
+.anime-hand{
+  position:absolute;
+  right:-10px;
+  bottom:-10px;
+  width:40px;
+  pointer-events:none; /* هذا هو المفتاح */
+  animation:handTap 1.4s infinite ease-in-out;
 }
 
-@keyframes fall{
-  to{transform:translateY(110vh)}
+@keyframes handTap{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(6px)}
+  100%{transform:translateY(0)}
 }
 </style>
 </head>
@@ -125,12 +122,16 @@ button{background:var(--main);color:white;border:none}
   <div class="subclock" id="date"></div>
 </div>
 
-<!-- ===== الصفحة الرئيسية ===== -->
+<!-- الصفحة الرئيسية -->
 <div id="home" class="container">
   <div class="card" onclick="openProgram()">💻 التخطيط</div>
   <div class="card" onclick="openApp()">📱 التنفيذ</div>
-  <!-- إضافة فقط -->
-  <div class="card" onclick="openSubjects()">📚 المواد</div>
+
+  <!-- المواد (يد فقط، لا تغيير ضغط) -->
+  <div class="card" onclick="openSubjects()">
+    📚 المواد
+    <img src="hand.png" class="anime-hand" alt="">
+  </div>
 </div>
 
 <div class="battle">
@@ -138,7 +139,7 @@ button{background:var(--main);color:white;border:none}
   <div id="countdown"></div>
 </div>
 
-<!-- ===== التخطيط ===== -->
+<!-- التخطيط -->
 <div id="program" class="page">
   <input id="planText" placeholder="اسم الخطة">
   <input type="time" id="planTime">
@@ -146,14 +147,14 @@ button{background:var(--main);color:white;border:none}
   <div id="plans"></div>
 </div>
 
-<!-- ===== التنفيذ ===== -->
+<!-- التنفيذ -->
 <div id="app" class="page">
   <textarea id="doneText"></textarea>
   <button onclick="addDone()">حفظ</button>
   <div id="doneList"></div>
 </div>
 
-<!-- ===== المواد ===== -->
+<!-- المواد -->
 <div id="subjects" class="container page">
   <div class="card" onclick="openSubject('arabic')">📘 العربية</div>
   <div class="card" onclick="openSubject('math')">🧮 الرياضيات</div>
@@ -163,99 +164,65 @@ button{background:var(--main);color:white;border:none}
   <div class="card" onclick="openSubject('geo')">🌍 الجغرافيا</div>
 </div>
 
-<!-- ===== الدروس ===== -->
-<div id="lessons" class="page">
-  <div id="lessonList" class="container"></div>
-</div>
+<!-- الدروس -->
+<div id="lessons" class="container page"></div>
 
-<!-- ===== الإعدادات ===== -->
+<!-- الإعدادات -->
 <div id="settings" class="page">
-  <button onclick="theme('#2b0b0b','#ff5722')">🔥 ناري</button>
-  <button onclick="snowTheme()">❄️ ثلجي</button>
-  <button onclick="theme('#1c1c1c','#d4af37')">🟨 ذهبي</button>
-  <button onclick="theme('#2a1437','#8e24aa')">💜 بنفسجي</button>
-  <button onclick="ramadanTheme()">🌙 رمضان</button>
+  <button>🔥 ناري</button>
+  <button>❄️ ثلجي</button>
+  <button>🟨 ذهبي</button>
+  <button>💜 بنفسجي</button>
+  <button>🌙 رمضان</button>
 </div>
 
 <script>
-/* الصفحات */
 const pages=["home","program","app","settings","subjects","lessons"];
+
 function show(id){
   pages.forEach(p=>document.getElementById(p).style.display="none");
   document.getElementById(id).style.display=
-    (id==="home"||id==="subjects")?"grid":"block";
+    (id==="home"||id==="subjects"||id==="lessons")?"grid":"block";
 }
+
 function home(){show("home")}
 function openProgram(){show("program")}
 function openApp(){show("app")}
 function settings(){show("settings")}
 function openSubjects(){show("subjects")}
 
-/* الساعة */
 setInterval(()=>{
   const n=new Date();
   clock.textContent=n.toLocaleTimeString();
   date.textContent=n.toLocaleDateString("ar-DZ");
 },1000);
 
-/* التخطيط والتنفيذ */
 function addPlan(){
   if(!planText.value||!planTime.value)return;
   plans.innerHTML+=`<div class="item">${planText.value}</div>`;
   planText.value="";planTime.value="";
 }
+
 function addDone(){
   if(!doneText.value)return;
   doneList.innerHTML+=`<div class="item">${doneText.value}</div>`;
   doneText.value="";
 }
 
-/* السمات */
-function theme(bg,main){
-  document.body.className="";
-  document.documentElement.style.setProperty("--bg",bg);
-  document.documentElement.style.setProperty("--main",main);
-  document.querySelectorAll(".lantern,.snowflake").forEach(e=>e.remove());
-}
-function ramadanTheme(){
-  theme("#fff8c4","#ffc107");
-  document.body.classList.add("ramadan-bg");
-  document.querySelectorAll("button").forEach(b=>b.classList.add("ramadan-btn"));
-  for(let i=0;i<8;i++){
-    let l=document.createElement("div");
-    l.className="lantern";
-    l.textContent="🏮";
-    l.style.left=Math.random()*100+"%";
-    document.body.appendChild(l);
-  }
-}
-function snowTheme(){
-  theme("#0b1f33","#1e88e5");
-  for(let i=0;i<15;i++){
-    let s=document.createElement("div");
-    s.className="snowflake";
-    s.textContent="❄️";
-    s.style.left=Math.random()*100+"%";
-    s.style.animationDuration=6+Math.random()*6+"s";
-    document.body.appendChild(s);
-  }
-}
-
-/* ===== المواد + الدروس ===== */
-const subjects={
+const lessonsData={
   arabic:["النصوص الأدبية","القواعد","الصرف","التعبير الكتابي","المحفوظات"],
-  math:["الأعداد","المعادلات","الدوال","الإحصاء","الهندسة"],
-  science:["التغذية","الهضم","التنفس","الدوران الدموي","الوراثة"],
-  physics:["المادة","الكتلة والحجم","الكثافة","الكهرباء","الطاقة"],
-  history:["الاحتلال","المقاومة","ثورة نوفمبر","مراحل الثورة","الاستقلال"],
-  geo:["الموقع الجغرافي","السكان","الموارد","الفلاحة","الصناعة"]
+  math:["الأعداد الطبيعية","الكسور","المعادلات","الهندسة","الإحصاء"],
+  science:["التغذية","الهضم","التنفس","الدوران الدموي"],
+  physics:["المادة","الكتلة والحجم","الكثافة","الكهرباء"],
+  history:["الاحتلال الفرنسي","المقاومة","ثورة نوفمبر","الاستقلال"],
+  geo:["الموقع الجغرافي","السكان","الموارد الطبيعية","الفلاحة","الصناعة"]
 };
 
 function openSubject(name){
   show("lessons");
-  lessonList.innerHTML="";
-  subjects[name].forEach(d=>{
-    lessonList.innerHTML+=`<div class="card">${d}</div>`;
+  lessons.innerHTML="";
+  lessonsData[name].forEach(l=>{
+    lessons.innerHTML+=`<div class="card">📘 ${l}</div>`;
   });
 }
 </script>
