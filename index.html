@@ -3,16 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <meta name="app-version" content="1.0.2">
 <title>Study Way 2</title>
 
-<!-- ===== PWA ===== -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b1f33">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
 <style>
 :root{
@@ -27,6 +22,8 @@ body{
   background:var(--bg);
   color:var(--text);
 }
+
+/* ===== الأساس ===== */
 .header{
   background:var(--main);
   padding:15px;
@@ -35,20 +32,9 @@ body{
   align-items:center;
   font-weight:bold;
 }
-
-/* العنوان الرئيسي فقط */
-.title{
-  font-size:18px;
-  font-weight:bold;
-}
-
-.clock{
-  text-align:center;
-  font-size:28px;
-  font-weight:bold;
-  margin:15px 0;
-}
-.subclock{font-size:14px;opacity:.8;}
+.title{font-size:18px}
+.clock{text-align:center;font-size:28px;margin:15px 0}
+.subclock{font-size:14px;opacity:.8}
 .container{
   padding:15px;
   display:grid;
@@ -62,7 +48,6 @@ body{
   padding:30px 10px;
   text-align:center;
   cursor:pointer;
-  font-size:18px;
 }
 .page{display:none;padding:15px}
 textarea,input,button{
@@ -71,28 +56,59 @@ textarea,input,button{
   margin-top:10px;
   border-radius:8px;
 }
-button{background:var(--main);color:white;border:none;}
+button{background:var(--main);color:white;border:none}
 .item{
   background:#fff;color:#000;padding:10px;margin-top:10px;
   border-radius:10px;position:relative;
 }
 .delete{
   position:absolute;top:5px;left:5px;
-  background:red;color:white;border:none;border-radius:6px;
+  background:red;color:white;border:none;
 }
 .battle{
   background:linear-gradient(135deg,#ff5722,#ff9800);
-  padding:20px;border-radius:18px;text-align:center;margin:15px;
+  padding:20px;border-radius:18px;margin:15px;text-align:center;
 }
-.countdown{font-size:22px;margin-top:10px;}
-.footer{text-align:center;padding:15px;font-size:14px;opacity:.9;}
-.footer button{
-  background:none;
-  border:none;
-  color:#4fc3f7;
-  font-size:14px;
-  font-weight:bold;
-  cursor:pointer;
+.footer{text-align:center;padding:15px}
+
+/* ===== رمضان (أصفر كامل) ===== */
+.ramadan-bg{
+  background:linear-gradient(180deg,#fff8c4,#ffd54f);
+}
+.ramadan-bg::after{
+  content:"☾";
+  position:fixed;
+  top:20px;
+  right:20px;
+  font-size:90px;
+  color:rgba(255,193,7,.6);
+  pointer-events:none;
+}
+.ramadan-btn{
+  background:linear-gradient(135deg,#ffeb3b,#ffc107)!important;
+  color:#3b2a00!important;
+}
+.lantern{
+  position:fixed;
+  top:-50px;
+  font-size:26px;
+  animation:fall 10s linear infinite;
+  pointer-events:none;
+}
+
+/* ===== ثلج ===== */
+.snowflake{
+  position:fixed;
+  top:-40px;
+  font-size:20px;
+  animation:fall 9s linear infinite;
+  pointer-events:none;
+  opacity:.9;
+}
+
+/* حركة موحدة */
+@keyframes fall{
+  to{transform:translateY(110vh)}
 }
 </style>
 </head>
@@ -105,7 +121,8 @@ button{background:var(--main);color:white;border:none;}
   <span onclick="settings()">⚙️</span>
 </div>
 
-<div class="clock" id="clock">00:00:00
+<div class="clock" id="clock">
+  00:00:00
   <div class="subclock" id="date"></div>
 </div>
 
@@ -116,11 +133,10 @@ button{background:var(--main);color:white;border:none;}
 
 <div class="battle">
   ⚔️ معركة الفصل
-  <div class="countdown" id="countdown"></div>
+  <div id="countdown"></div>
 </div>
 
 <div id="program" class="page">
-  <h3>🧠 الخطط</h3>
   <input id="planText" placeholder="اسم الخطة">
   <input type="time" id="planTime">
   <button onclick="addPlan()">إضافة</button>
@@ -128,36 +144,20 @@ button{background:var(--main);color:white;border:none;}
 </div>
 
 <div id="app" class="page">
-  <h3>✅ ما تم إنجازه</h3>
   <textarea id="doneText"></textarea>
   <button onclick="addDone()">حفظ</button>
   <div id="doneList"></div>
 </div>
 
 <div id="settings" class="page">
-  <h3>🎨 السمات</h3>
   <button onclick="theme('#2b0b0b','#ff5722')">🔥 ناري</button>
-  <button onclick="theme('#0b1f33','#1e88e5')">❄️ ثلجي</button>
+  <button onclick="snowTheme()">❄️ ثلجي</button>
   <button onclick="theme('#1c1c1c','#d4af37')">🟨 ذهبي</button>
   <button onclick="theme('#2a1437','#8e24aa')">💜 بنفسجي</button>
-</div>
-
-<div class="footer">
-  🌐 <button onclick="openSite()">موقعنا الرسمي</button>
+  <button onclick="ramadanTheme()">🌙 رمضان</button>
 </div>
 
 <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
-
-function openSite(){
-  window.open(
-    "https://sites.google.com/view/studywayschool/%D8%A7%D9%84%D8%B5%D9%81%D8%AD%D8%A9-%D8%A7%D9%84%D8%B1%D8%A6%D9%8A%D8%B3%D9%8A%D8%A9",
-    "_blank"
-  );
-}
-
 const pages=["home","program","app","settings"];
 function show(id){
   pages.forEach(p=>document.getElementById(p).style.display="none");
@@ -168,41 +168,54 @@ function openProgram(){show("program")}
 function openApp(){show("app")}
 function settings(){show("settings")}
 
-function updateClock(){
+setInterval(()=>{
   const n=new Date();
   clock.textContent=n.toLocaleTimeString();
   date.textContent=n.toLocaleDateString("ar-DZ");
-}
-setInterval(updateClock,1000);updateClock();
-
-function updateCountdown(){
-  const now=new Date();
-  let target=new Date(now.getFullYear(),0,7);
-  if(now>target) target=new Date(now.getFullYear()+1,0,7);
-  const diff=target-now;
-  countdown.textContent=Math.floor(diff/86400000)+" يوم";
-}
-setInterval(updateCountdown,1000);updateCountdown();
+},1000);
 
 function addPlan(){
   if(!planText.value||!planTime.value)return;
-  plans.innerHTML+=`<div class="item">
-    <button class="delete" onclick="this.parentElement.remove()">X</button>
-    ${planText.value} ⏰ ${planTime.value}
-  </div>`;
+  plans.innerHTML+=`<div class="item">${planText.value}</div>`;
   planText.value="";planTime.value="";
 }
 function addDone(){
   if(!doneText.value)return;
-  doneList.innerHTML+=`<div class="item">
-    <button class="delete" onclick="this.parentElement.remove()">X</button>
-    ${doneText.value}
-  </div>`;
+  doneList.innerHTML+=`<div class="item">${doneText.value}</div>`;
   doneText.value="";
 }
 function theme(bg,main){
+  document.body.className="";
   document.documentElement.style.setProperty("--bg",bg);
   document.documentElement.style.setProperty("--main",main);
+  document.querySelectorAll(".lantern,.snowflake").forEach(e=>e.remove());
+}
+
+/* ===== رمضان ===== */
+function ramadanTheme(){
+  theme("#fff8c4","#ffc107");
+  document.body.classList.add("ramadan-bg");
+  document.querySelectorAll("button").forEach(b=>b.classList.add("ramadan-btn"));
+  for(let i=0;i<8;i++){
+    let l=document.createElement("div");
+    l.className="lantern";
+    l.textContent="🏮";
+    l.style.left=Math.random()*100+"%";
+    document.body.appendChild(l);
+  }
+}
+
+/* ===== ثلج بنجوم ===== */
+function snowTheme(){
+  theme("#0b1f33","#1e88e5");
+  for(let i=0;i<15;i++){
+    let s=document.createElement("div");
+    s.className="snowflake";
+    s.textContent="❄️";
+    s.style.left=Math.random()*100+"%";
+    s.style.animationDuration=6+Math.random()*6+"s";
+    document.body.appendChild(s);
+  }
 }
 </script>
 
