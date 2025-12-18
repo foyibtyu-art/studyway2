@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -94,6 +95,7 @@ button{background:var(--main);color:white;border:none}
   font-size:26px;
   animation:fall 10s linear infinite;
   pointer-events:none;
+  z-index: 9999;
 }
 
 /* ===== ثلج ===== */
@@ -125,11 +127,9 @@ button{background:var(--main);color:white;border:none}
   <div class="subclock" id="date"></div>
 </div>
 
-<!-- ===== الصفحة الرئيسية ===== -->
 <div id="home" class="container">
   <div class="card" onclick="openProgram()">💻 التخطيط</div>
   <div class="card" onclick="openApp()">📱 التنفيذ</div>
-  <!-- إضافة فقط -->
   <div class="card" onclick="openSubjects()">📚 المواد</div>
 </div>
 
@@ -138,7 +138,6 @@ button{background:var(--main);color:white;border:none}
   <div id="countdown"></div>
 </div>
 
-<!-- ===== التخطيط ===== -->
 <div id="program" class="page">
   <input id="planText" placeholder="اسم الخطة">
   <input type="time" id="planTime">
@@ -146,14 +145,12 @@ button{background:var(--main);color:white;border:none}
   <div id="plans"></div>
 </div>
 
-<!-- ===== التنفيذ ===== -->
 <div id="app" class="page">
   <textarea id="doneText"></textarea>
   <button onclick="addDone()">حفظ</button>
   <div id="doneList"></div>
 </div>
 
-<!-- ===== المواد ===== -->
 <div id="subjects" class="container page">
   <div class="card" onclick="openSubject('arabic')">📘 العربية</div>
   <div class="card" onclick="openSubject('math')">🧮 الرياضيات</div>
@@ -163,12 +160,10 @@ button{background:var(--main);color:white;border:none}
   <div class="card" onclick="openSubject('geo')">🌍 الجغرافيا</div>
 </div>
 
-<!-- ===== الدروس ===== -->
 <div id="lessons" class="page">
   <div id="lessonList" class="container"></div>
 </div>
 
-<!-- ===== الإعدادات ===== -->
 <div id="settings" class="page">
   <button onclick="theme('#2b0b0b','#ff5722')">🔥 ناري</button>
   <button onclick="snowTheme()">❄️ ثلجي</button>
@@ -211,24 +206,37 @@ function addDone(){
 }
 
 /* السمات */
+let ramadanInterval = null;
+
 function theme(bg,main){
   document.body.className="";
   document.documentElement.style.setProperty("--bg",bg);
   document.documentElement.style.setProperty("--main",main);
   document.querySelectorAll(".lantern,.snowflake").forEach(e=>e.remove());
+  if(ramadanInterval) clearInterval(ramadanInterval);
 }
+
 function ramadanTheme(){
   theme("#fff8c4","#ffc107");
+
   document.body.classList.add("ramadan-bg");
-  document.querySelectorAll("button").forEach(b=>b.classList.add("ramadan-btn"));
-  for(let i=0;i<8;i++){
+  document.querySelectorAll("button")
+    .forEach(b=>b.classList.add("ramadan-btn"));
+
+  document.querySelectorAll(".lantern").forEach(e=>e.remove());
+  if(ramadanInterval) clearInterval(ramadanInterval);
+
+  ramadanInterval = setInterval(()=>{
     let l=document.createElement("div");
     l.className="lantern";
     l.textContent="🏮";
     l.style.left=Math.random()*100+"%";
+    l.style.animationDuration=(6+Math.random()*6)+"s";
     document.body.appendChild(l);
-  }
+    setTimeout(()=>l.remove(),12000);
+  },1200);
 }
+
 function snowTheme(){
   theme("#0b1f33","#1e88e5");
   for(let i=0;i<15;i++){
