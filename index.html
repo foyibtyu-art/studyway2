@@ -3,77 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="app-version" content="1.0.2">
-<title>Study Way 2 - Spring Edition</title>
+<title>Study Way - Pro Edition</title>
 
 <style>
-:root{
-  --bg:#0b1f33;
-  --card:#ffffff;
-  --main:#0a58ca;
-  --text:#ffffff;
+:root {
+  --bg: #0b1f33;
+  --card-bg: rgba(255, 255, 255, 0.1);
+  --main: #1e88e5;
+  --text: #ffffff;
+  --item-bg: #ffffff;
+  --item-text: #000000;
 }
-body{
-  margin:0;
-  font-family: Arial, sans-serif;
-  background:var(--bg);
-  color:var(--text);
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.5s ease;
   overflow-x: hidden;
-  transition: background 0.5s ease;
 }
 
-/* ===== الأساس ===== */
-.header{
-  background:var(--main);
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-weight:bold;
+/* ===== الهيدر ===== */
+.header {
+  background: var(--main);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
-.title{font-size:18px}
-.clock{text-align:center;font-size:28px;margin:15px 0}
-.subclock{font-size:14px;opacity:.8}
-.container{
-  padding:15px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:15px;
-}
-.card{
-  background:var(--card);
-  color:#000;
-  border-radius:16px;
-  padding:30px 10px;
-  text-align:center;
-  cursor:pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-.page{display:none;padding:15px}
-textarea,input,button,select{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:8px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-button{background:var(--main);color:white;border:none;cursor:pointer;font-weight:bold}
-.item{
-  background:#fff;color:#000;padding:10px;margin-top:10px;
-  border-radius:10px;position:relative;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.delete-btn{
-  background:none; color:red; border:none; width:auto; margin:0; 
-  cursor:pointer; font-size:18px;
-}
-.battle{
-  background:linear-gradient(135deg,#ff5722,#ff9800);
-  padding:20px;border-radius:18px;margin:15px;text-align:center;
+.title { font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+
+/* ===== الساعة ===== */
+.clock-section { text-align: center; padding: 20px 0; }
+.clock { font-size: 35px; font-weight: 300; }
+.subclock { font-size: 14px; opacity: 0.8; margin-top: 5px; }
+
+/* ===== الشبكة والكروت ===== */
+.container {
+  padding: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
 }
 
-/* ===== العناصر المتساقطة (ثلج، فانوس، ورد) ===== */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  color: inherit;
+  border-radius: 15px;
+  padding: 25px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+  border: 1px solid rgba(255,255,255,0.1);
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  background: var(--main);
+}
+
+/* ===== زر المعركة مع الوميض ===== */
+.battle {
+  position: relative;
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  padding: 20px;
+  border-radius: 15px;
+  margin: 15px;
+  text-align: center;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.battle::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 15px;
+  box-shadow: 0 0 20px #ff5722;
+  animation: glow 1.5s infinite alternate;
+  z-index: -1;
+}
+
+@keyframes glow {
+  from { opacity: 0.5; box-shadow: 0 0 5px #ff5722; }
+  to { opacity: 1; box-shadow: 0 0 20px #ff5722, 0 0 30px #ff9800; }
+}
+
+/* ===== الأزرار الواقعية ===== */
+button {
+  background: var(--main);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+  transition: 0.1s;
+}
+
+button:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+}
+
+/* ===== العناصر المتساقطة ===== */
 .falling-element {
   position: fixed;
   top: -50px;
@@ -81,78 +120,75 @@ button{background:var(--main);color:white;border:none;cursor:pointer;font-weight
   z-index: 9999;
   animation: fall linear infinite;
 }
+@keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
-@keyframes fall{
-  to{transform:translateY(110vh) rotate(360deg)}
+/* ===== الصفحات ===== */
+.page { display: none; padding: 15px; }
+textarea, input, select {
+  width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.1); box-sizing: border-box;
+  background: rgba(255,255,255,0.9); color: #000;
 }
 
-/* ===== سمة الربيع ===== */
-.spring-bg {
-  background: linear-gradient(180deg, #e8f5e9, #c8e6c9) !important;
-  color: #1b5e20 !important;
+.item {
+  background: var(--item-bg); color: var(--item-text);
+  padding: 15px; margin-top: 10px; border-radius: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-
-/* ===== صورة الشكر ===== */
-.thanks-img {
-  width: 100%;
-  max-width: 300px;
-  display: block;
-  margin: 20px auto;
-  border-radius: 10px;
-}
+.delete-btn { background: none; color: #ff5252; box-shadow: none; width: auto; font-size: 18px; }
 </style>
 </head>
 
 <body onload="loadAll()">
 
 <div class="header">
-  <span onclick="home()" style="cursor:pointer">⬅️</span>
-  <span class="title">📘 Study Way</span>
-  <span onclick="settings()" style="cursor:pointer">⚙️</span>
+  <span onclick="home()" style="cursor:pointer; font-size: 20px;">←</span>
+  <span class="title">STUDY WAY</span>
+  <span onclick="settings()" style="cursor:pointer; font-size: 20px;">⚙</span>
 </div>
 
-<div class="clock" id="clock">
-  00:00:00
+<div class="clock-section">
+  <div class="clock" id="clock">00:00:00</div>
   <div class="subclock" id="date"></div>
 </div>
 
 <div id="home" class="container">
-  <div class="card" onclick="openProgram()">💻 التخطيط</div>
-  <div class="card" onclick="openApp()">📱 التنفيذ</div>
-  <div class="card" onclick="openSubjects()">📚 المواد</div>
+  <div class="card" onclick="openProgram()">التخطيط الدراسي</div>
+  <div class="card" onclick="openApp()">سجل التنفيذ</div>
+  <div class="card" onclick="openSubjects()">قائمة المواد</div>
 </div>
 
 <div class="battle">
-  ⚔️ معركة الفصل
-  <div id="countdown">الموسم الدراسي مستمر!</div>
+  معركة الفصل الدراسي
+  <div id="countdown" style="font-size: 12px; opacity: 0.9;">الموسم مستمر.. حقق هدفك اليوم!</div>
 </div>
 
 <div id="program" class="page">
   <select id="planType">
-    <option value="🌙 وقت النوم">🌙 وقت النوم</option>
-    <option value="☀️ وقت الاستيقاظ">☀️ وقت الاستيقاظ</option>
-    <option value="📖 وقت المراجعة">📖 وقت المراجعة</option>
-    <option value="🎮 وقت اللعب">🎮 وقت اللعب</option>
+    <option>وقت النوم</option>
+    <option>وقت الاستيقاظ</option>
+    <option>وقت المراجعة</option>
+    <option>وقت اللعب</option>
   </select>
   <input type="time" id="planTime">
   <button onclick="addPlan()">إضافة للخطة</button>
   <div id="plans"></div>
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_G976H7K2V_v-zYw4eS-6I1FhO7tXn6vF6w&s" alt="Thank you" class="thanks-img">
 </div>
 
 <div id="app" class="page">
-  <textarea id="doneText" placeholder="ماذا أنجزت اليوم؟"></textarea>
+  <textarea id="doneText" placeholder="ما هي الإنجازات التي حققتها اليوم؟"></textarea>
   <button onclick="addDone()">حفظ الإنجاز</button>
   <div id="doneList"></div>
 </div>
 
 <div id="subjects" class="container page">
-  <div class="card" onclick="openSubject('arabic')">📘 العربية</div>
-  <div class="card" onclick="openSubject('math')">🧮 الرياضيات</div>
-  <div class="card" onclick="openSubject('science')">🧪 العلوم</div>
-  <div class="card" onclick="openSubject('physics')">⚡ الفيزياء</div>
-  <div class="card" onclick="openSubject('history')">🏛️ التاريخ</div>
-  <div class="card" onclick="openSubject('geo')">🌍 الجغرافيا</div>
+  <div class="card" onclick="openSubject('arabic')">اللغة العربية</div>
+  <div class="card" onclick="openSubject('math')">الرياضيات</div>
+  <div class="card" onclick="openSubject('science')">العلوم</div>
+  <div class="card" onclick="openSubject('physics')">الفيزياء</div>
+  <div class="card" onclick="openSubject('history')">التاريخ</div>
+  <div class="card" onclick="openSubject('geo')">الجغرافيا</div>
 </div>
 
 <div id="lessons" class="page">
@@ -160,13 +196,11 @@ button{background:var(--main);color:white;border:none;cursor:pointer;font-weight
 </div>
 
 <div id="settings" class="page">
-  <h3 style="text-align:center; color:inherit">اختر المظهر</h3>
-  <button onclick="saveTheme('spring', '#e8f5e9','#2e7d32')" style="background:#4caf50">🌸 ربيعي (جديد)</button>
-  <button onclick="saveTheme('fire', '#2b0b0b','#ff5722')" style="background:#ff5722">🔥 ناري</button>
-  <button onclick="saveTheme('snow', '#0b1f33','#1e88e5')" style="background:#1e88e5">❄️ ثلجي</button>
-  <button onclick="saveTheme('gold', '#1c1c1c','#d4af37')" style="background:#d4af37">🟨 ذهبي</button>
-  <button onclick="saveTheme('purple', '#2a1437','#8e24aa')" style="background:#8e24aa">💜 بنفسجي</button>
-  <button onclick="saveTheme('ramadan', '#fff8c4', '#ffc107')" style="background:#ffc107; color:#000">🌙 رمضان</button>
+  <h3 style="text-align:center">اختيار المظهر العام</h3>
+  <button onclick="saveTheme('spring', '#e8f5e9','#2e7d32','#1b5e20')" style="background:#4caf50; width:100%; margin-bottom:10px">الربيع المزهر</button>
+  <button onclick="saveTheme('fire', '#2b0b0b','#ff5722','#ffffff')" style="background:#ff5722; width:100%; margin-bottom:10px">النمط الناري</button>
+  <button onclick="saveTheme('snow', '#0b1f33','#1e88e5','#ffffff')" style="background:#1e88e5; width:100%; margin-bottom:10px">النمط الثلجي</button>
+  <button onclick="saveTheme('ramadan', '#fff8c4', '#ffc107','#3b2a00')" style="background:#ffc107; color:#000; width:100%; margin-bottom:10px">نمط رمضان</button>
 </div>
 
 <script>
@@ -185,10 +219,9 @@ function openApp(){show("app")}
 function settings(){show("settings")}
 function openSubjects(){show("subjects")}
 
-/* ساعة النظام */
 setInterval(()=>{
   const n=new Date();
-  document.getElementById('clock').childNodes[0].nodeValue = n.toLocaleTimeString("ar-DZ");
+  document.getElementById('clock').textContent = n.toLocaleTimeString("ar-DZ");
   document.getElementById('date').textContent = n.toLocaleDateString("ar-DZ", {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 },1000);
 
@@ -196,7 +229,7 @@ setInterval(()=>{
 function addPlan(){
   if(!planTime.value) return;
   const id = Date.now();
-  const html = `<div class="item" id="p${id}"><span>${planType.value}: ${planTime.value}</span><button class="delete-btn" onclick="removeItem('p${id}','plansData')">🗑️</button></div>`;
+  const html = `<div class="item" id="p${id}"><span>${planType.value}: ${planTime.value}</span><button class="delete-btn" onclick="removeItem('p${id}','plansData')">✖</button></div>`;
   document.getElementById('plans').innerHTML += html;
   saveData('plansData', document.getElementById('plans').innerHTML);
 }
@@ -204,7 +237,7 @@ function addPlan(){
 function addDone(){
   if(!doneText.value) return;
   const id = Date.now();
-  const html = `<div class="item" id="d${id}"><span>${doneText.value}</span><button class="delete-btn" onclick="removeItem('d${id}','doneData')">🗑️</button></div>`;
+  const html = `<div class="item" id="d${id}"><span>${doneText.value}</span><button class="delete-btn" onclick="removeItem('d${id}','doneData')">✖</button></div>`;
   document.getElementById('doneList').innerHTML += html;
   saveData('doneData', document.getElementById('doneList').innerHTML);
   doneText.value="";
@@ -220,15 +253,15 @@ function removeItem(id, key) {
 function clearEffects() {
   if(activeInterval) clearInterval(activeInterval);
   document.querySelectorAll(".falling-element").forEach(e=>e.remove());
-  document.body.className = "";
-  document.querySelectorAll("button").forEach(b=>b.style.filter = "none");
 }
 
-function theme(bg, main, textColor = "#ffffff") {
+function applyBaseTheme(bg, main, textColor) {
   clearEffects();
   document.documentElement.style.setProperty("--bg", bg);
   document.documentElement.style.setProperty("--main", main);
   document.body.style.color = textColor;
+  // تعديل شفافية الكروت بناء على السمة
+  document.documentElement.style.setProperty("--card-bg", bg === '#e8f5e9' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)');
 }
 
 function createFallingItem(emoji, duration) {
@@ -242,66 +275,45 @@ function createFallingItem(emoji, duration) {
   setTimeout(() => item.remove(), duration * 1000);
 }
 
-function springTheme() {
-  theme("#e8f5e9", "#2e7d32", "#1b5e20");
-  document.body.classList.add("spring-bg");
-  const flowers = ["🌸", "🌼", "🌷", "🌹", "🍃"];
-  activeInterval = setInterval(() => {
-    createFallingItem(flowers[Math.floor(Math.random()*flowers.length)], Math.random()*5 + 5);
-  }, 600);
+function saveTheme(type, bg, main, text) {
+  localStorage.setItem('theme_type', type);
+  localStorage.setItem('theme_bg', bg);
+  localStorage.setItem('theme_main', main);
+  localStorage.setItem('theme_text', text);
+  applyTheme(type, bg, main, text);
 }
 
-function snowTheme() {
-  theme("#0b1f33", "#1e88e5");
-  activeInterval = setInterval(() => {
-    createFallingItem("❄️", Math.random()*5 + 5);
-  }, 400);
-}
-
-function ramadanTheme() {
-  theme("#fff8c4", "#ffc107", "#3b2a00");
-  activeInterval = setInterval(() => {
-    createFallingItem("🏮", Math.random()*5 + 7);
-  }, 1000);
-}
-
-function saveTheme(type, bg, main) {
-  localStorage.setItem('themeType', type);
-  applyTheme(type, bg, main);
-}
-
-function applyTheme(type, bg, main) {
-  if(type === 'spring') springTheme();
-  else if(type === 'snow') snowTheme();
-  else if(type === 'ramadan') ramadanTheme();
-  else theme(bg, main);
+function applyTheme(type, bg, main, text) {
+  applyBaseTheme(bg, main, text);
+  if(type === 'spring') {
+    const flowers = ["🌸", "🌼", "🌷"];
+    activeInterval = setInterval(() => createFallingItem(flowers[Math.floor(Math.random()*3)], 6), 600);
+  } else if(type === 'snow') {
+    activeInterval = setInterval(() => createFallingItem("❄️", 5), 400);
+  } else if(type === 'ramadan') {
+    activeInterval = setInterval(() => createFallingItem("🏮", 7), 1000);
+  }
 }
 
 function loadAll() {
   if(localStorage.getItem('plansData')) document.getElementById('plans').innerHTML = localStorage.getItem('plansData');
   if(localStorage.getItem('doneData')) document.getElementById('doneList').innerHTML = localStorage.getItem('doneData');
   
-  const savedType = localStorage.getItem('themeType') || 'snow';
-  // تعيين الألوان الافتراضية لكل نوع عند التحميل
-  const themes = {
-    'spring': ['#e8f5e9', '#2e7d32'],
-    'fire': ['#2b0b0b', '#ff5722'],
-    'snow': ['#0b1f33', '#1e88e5'],
-    'gold': ['#1c1c1c', '#d4af37'],
-    'purple': ['#2a1437', '#8e24aa'],
-    'ramadan': ['#fff8c4', '#ffc107']
-  };
-  applyTheme(savedType, themes[savedType][0], themes[savedType][1]);
+  const type = localStorage.getItem('theme_type') || 'snow';
+  const bg = localStorage.getItem('theme_bg') || '#0b1f33';
+  const main = localStorage.getItem('theme_main') || '#1e88e5';
+  const text = localStorage.getItem('theme_text') || '#ffffff';
+  applyTheme(type, bg, main, text);
 }
 
-/* المواد والدروس */
+/* المواد */
 const subjects={
-  arabic:["النصوص الأدبية","القواعد","الصرف","التعبير الكتابي","المحفوظات"],
-  math:["الأعداد","المعادلات","الدوال","الإحصاء","الهندسة"],
-  science:["التغذية","الهضم","التنفس","الدوران الدموي","الوراثة"],
-  physics:["المادة","الكتلة والحجم","الكثافة","الكهرباء","الطاقة"],
-  history:["الاحتلال","المقاومة","ثورة نوفمبر","مراحل الثورة","الاستقلال"],
-  geo:["الموقع الجغرافي","السكان","الموارد","الفلاحة","الصناعة"]
+  arabic:["النصوص","القواعد","البلاغة"],
+  math:["الجبر","الهندسة","الاحتمالات"],
+  science:["المناعة","الجيولوجيا","الأعصاب"],
+  physics:["الميكانيك","الكهرباء","النووي"],
+  history:["الثورة التحريرية","العالم المعاصر"],
+  geo:["الجزائر","القوى الاقتصادية"]
 };
 
 function openSubject(name){
@@ -309,10 +321,9 @@ function openSubject(name){
   const list = document.getElementById("lessonList");
   list.innerHTML="";
   subjects[name].forEach(d=>{
-    list.innerHTML+=`<div class="card" onclick="this.style.background='#a5d6a7'">${d}</div>`;
+    list.innerHTML+=`<div class="card" onclick="this.style.background='var(--main)'">${d}</div>`;
   });
 }
 </script>
-
 </body>
 </html>
