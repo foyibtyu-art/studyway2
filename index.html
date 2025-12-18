@@ -21,6 +21,7 @@ body{
   font-family:Arial;
   background:var(--bg);
   color:var(--text);
+  min-height: 100vh;
 }
 
 /* ===== الأساس ===== */
@@ -56,7 +57,7 @@ textarea,input,button{
   margin-top:10px;
   border-radius:8px;
 }
-button{background:var(--main);color:white;border:none}
+button{background:var(--main);color:white;border:none;cursor:pointer}
 .item{
   background:#fff;color:#000;padding:15px 10px;margin-top:10px;
   border-radius:10px;position:relative;
@@ -70,11 +71,10 @@ button{background:var(--main);color:white;border:none}
   background:linear-gradient(135deg,#ff5722,#ff9800);
   padding:20px;border-radius:18px;margin:15px;text-align:center;
 }
-.footer{text-align:center;padding:15px}
 
 /* ===== رمضان ===== */
 .ramadan-bg{
-  background:linear-gradient(180deg,#fff8c4,#ffd54f);
+  background:linear-gradient(180deg,#fff8c4,#ffd54f)!important;
 }
 .ramadan-bg::after{
   content:"☾";
@@ -114,7 +114,7 @@ button{background:var(--main);color:white;border:none}
 </style>
 </head>
 
-<body>
+<body onload="loadAll()">
 
 <div class="header">
   <span onclick="home()">⬅️</span>
@@ -146,7 +146,7 @@ button{background:var(--main);color:white;border:none}
 </div>
 
 <div id="app" class="page">
-  <textarea id="doneText"></textarea>
+  <textarea id="doneText" placeholder="ماذا أنجزت اليوم؟"></textarea>
   <button onclick="addDone()">حفظ</button>
   <div id="doneList"></div>
 </div>
@@ -165,11 +165,12 @@ button{background:var(--main);color:white;border:none}
 </div>
 
 <div id="settings" class="page">
-  <button onclick="theme('#2b0b0b','#ff5722')">🔥 ناري</button>
-  <button onclick="snowTheme()">❄️ ثلجي</button>
-  <button onclick="theme('#1c1c1c','#d4af37')">🟨 ذهبي</button>
-  <button onclick="theme('#2a1437','#8e24aa')">💜 بنفسجي</button>
-  <button onclick="ramadanTheme()">🌙 رمضان</button>
+  <button onclick="saveTheme('fire', '#2b0b0b','#ff5722')">🔥 ناري</button>
+  <button onclick="saveTheme('snow', '#0b1f33','#1e88e5')">❄️ ثلجي</button>
+  <button onclick="saveTheme('gold', '#1c1c1c','#d4af37')">🟨 ذهبي</button>
+  <button onclick="saveTheme('purple', '#2a1437','#8e24aa')">💜 بنفسجي</button>
+  <button onclick="saveTheme('ramadan')">🌙 رمضان</button>
+  <button style="background: grey; margin-top: 30px;" onclick="clearData()">⚠️ مسح كل البيانات</button>
 </div>
 
 <script>
@@ -193,27 +194,62 @@ setInterval(()=>{
   date.textContent=n.toLocaleDateString("ar-DZ");
 },1000);
 
-/* التخطيط والتنفيذ */
+/* --- نظام الحفظ الذكي --- */
+
 function addPlan(){
   if(!planText.value||!planTime.value)return;
-  const planId = 'plan-' + Date.now();
-  plans.innerHTML+=`
-    <div class="item" id="${planId}">
-      <span>⏰ ${planTime.value} - ${planText.value}</span>
-      <button class="delete-btn" onclick="document.getElementById('${planId}').remove()">🗑️</button>
-    </div>`;
+  const id = Date.now();
+  const html = `<div class="item" id="p${id}"><span>⏰ ${planTime.value} - ${planText.value}</span><button class="delete-btn" onclick="removeItem('p${id}','plansData')">🗑️</button></div>`;
+  plans.innerHTML += html;
+  saveData('plansData', plans.innerHTML);
   planText.value="";planTime.value="";
 }
 
 function addDone(){
   if(!doneText.value)return;
-  const doneId = 'done-' + Date.now();
-  doneList.innerHTML+=`
-    <div class="item" id="${doneId}">
-      <span>✅ ${doneText.value}</span>
-      <button class="delete-btn" onclick="document.getElementById('${doneId}').remove()">🗑️</button>
-    </div>`;
+  const id = Date.now();
+  const html = `<div class="item" id="d${id}"><span>✅ ${doneText.value}</span><button class="delete-btn" onclick="removeItem('d${id}','doneData')">🗑️</button></div>`;
+  doneList.innerHTML += html;
+  saveData('doneData', doneList.innerHTML);
   doneText.value="";
+}
+
+function saveData(key, val) { localStorage.setItem(key, val); }
+
+function removeItem(id, key) {
+  document.getElementById(id).remove();
+  saveData(key, document.getElementById(key === 'plansData' ? 'plans' : 'doneList').innerHTML);
+}
+
+function saveTheme(type, bg, main) {
+  localStorage.setItem('themeType', type);
+  if(type === 'ramadan') {
+    ramadanTheme();
+  } else if(type === 'snow') {
+    snowTheme();
+  } else {
+    theme(bg, main);
+  }
+}
+
+function loadAll() {
+  if(localStorage.getItem('plansData')) plans.innerHTML = localStorage.getItem('plansData');
+  if(localStorage.getItem('doneData')) doneList.innerHTML = localStorage.getItem('doneData');
+  
+  // تحميل السمة المحفوظة
+  const savedTheme = localStorage.getItem('themeType');
+  if(savedTheme === 'fire') theme('#2b0b0b','#ff5722');
+  else if(savedTheme === 'snow') snowTheme();
+  else if(savedTheme === 'gold') theme('#1c1c1c','#d4af37');
+  else if(savedTheme === 'purple') theme('#2a1437','#8e24aa');
+  else if(savedTheme === 'ramadan') ramadanTheme();
+}
+
+function clearData() {
+  if(confirm("هل تريد مسح جميع البيانات والخلفيات؟")) {
+    localStorage.clear();
+    location.reload();
+  }
 }
 
 /* السمات */
@@ -229,14 +265,9 @@ function theme(bg,main){
 
 function ramadanTheme(){
   theme("#fff8c4","#ffc107");
-
   document.body.classList.add("ramadan-bg");
-  document.querySelectorAll("button")
-    .forEach(b=>b.classList.add("ramadan-btn"));
-
-  document.querySelectorAll(".lantern").forEach(e=>e.remove());
+  document.querySelectorAll("button").forEach(b=>b.classList.add("ramadan-btn"));
   if(ramadanInterval) clearInterval(ramadanInterval);
-
   ramadanInterval = setInterval(()=>{
     let l=document.createElement("div");
     l.className="lantern";
@@ -260,16 +291,15 @@ function snowTheme(){
   }
 }
 
-/* ===== المواد + الدروس ===== */
+/* المواد والدروس */
 const subjects={
   arabic:["النصوص الأدبية","القواعد","الصرف","التعبير الكتابي","المحفوظات"],
   math:["الأعداد","المعادلات","الدوال","الإحصاء","الهندسة"],
   science:["التغذية","الهضم","التنفس","الدوران الدموي","الوراثة"],
-  physics:["المادة","الكتلة والحجم","الكتافة","الكهرباء","الطاقة"],
+  physics:["المادة","الكتلة والحجم","الكثافة","الكهرباء","الطاقة"],
   history:["الاحتلال","المقاومة","ثورة نوفمبر","مراحل الثورة","الاستقلال"],
   geo:["الموقع الجغرافي","السكان","الموارد","الفلاحة","الصناعة"]
 };
-
 function openSubject(name){
   show("lessons");
   lessonList.innerHTML="";
