@@ -58,12 +58,13 @@ textarea,input,button{
 }
 button{background:var(--main);color:white;border:none}
 .item{
-  background:#fff;color:#000;padding:10px;margin-top:10px;
+  background:#fff;color:#000;padding:15px 10px;margin-top:10px;
   border-radius:10px;position:relative;
+  display: flex; justify-content: space-between; align-items: center;
 }
-.delete{
-  position:absolute;top:5px;left:5px;
-  background:red;color:white;border:none;
+.delete-btn{
+  background:none; color:red; border:none; width:auto; margin:0; 
+  cursor:pointer; font-size:18px; padding:5px;
 }
 .battle{
   background:linear-gradient(135deg,#ff5722,#ff9800);
@@ -195,12 +196,23 @@ setInterval(()=>{
 /* التخطيط والتنفيذ */
 function addPlan(){
   if(!planText.value||!planTime.value)return;
-  plans.innerHTML+=`<div class="item">${planText.value}</div>`;
+  const planId = 'plan-' + Date.now();
+  plans.innerHTML+=`
+    <div class="item" id="${planId}">
+      <span>⏰ ${planTime.value} - ${planText.value}</span>
+      <button class="delete-btn" onclick="document.getElementById('${planId}').remove()">🗑️</button>
+    </div>`;
   planText.value="";planTime.value="";
 }
+
 function addDone(){
   if(!doneText.value)return;
-  doneList.innerHTML+=`<div class="item">${doneText.value}</div>`;
+  const doneId = 'done-' + Date.now();
+  doneList.innerHTML+=`
+    <div class="item" id="${doneId}">
+      <span>✅ ${doneText.value}</span>
+      <button class="delete-btn" onclick="document.getElementById('${doneId}').remove()">🗑️</button>
+    </div>`;
   doneText.value="";
 }
 
@@ -253,7 +265,7 @@ const subjects={
   arabic:["النصوص الأدبية","القواعد","الصرف","التعبير الكتابي","المحفوظات"],
   math:["الأعداد","المعادلات","الدوال","الإحصاء","الهندسة"],
   science:["التغذية","الهضم","التنفس","الدوران الدموي","الوراثة"],
-  physics:["المادة","الكتلة والحجم","الكثافة","الكهرباء","الطاقة"],
+  physics:["المادة","الكتلة والحجم","الكتافة","الكهرباء","الطاقة"],
   history:["الاحتلال","المقاومة","ثورة نوفمبر","مراحل الثورة","الاستقلال"],
   geo:["الموقع الجغرافي","السكان","الموارد","الفلاحة","الصناعة"]
 };
@@ -269,4 +281,3 @@ function openSubject(name){
 
 </body>
 </html>
-
