@@ -71,7 +71,7 @@ button{background:var(--main);color:white;border:none}
 }
 .footer{text-align:center;padding:15px}
 
-/* ===== رمضان (أصفر كامل) ===== */
+/* ===== رمضان ===== */
 .ramadan-bg{
   background:linear-gradient(180deg,#fff8c4,#ffd54f);
 }
@@ -106,7 +106,6 @@ button{background:var(--main);color:white;border:none}
   opacity:.9;
 }
 
-/* حركة موحدة */
 @keyframes fall{
   to{transform:translateY(110vh)}
 }
@@ -126,9 +125,12 @@ button{background:var(--main);color:white;border:none}
   <div class="subclock" id="date"></div>
 </div>
 
+<!-- ===== الصفحة الرئيسية ===== -->
 <div id="home" class="container">
   <div class="card" onclick="openProgram()">💻 التخطيط</div>
   <div class="card" onclick="openApp()">📱 التنفيذ</div>
+  <!-- إضافة فقط -->
+  <div class="card" onclick="openSubjects()">📚 المواد</div>
 </div>
 
 <div class="battle">
@@ -136,6 +138,7 @@ button{background:var(--main);color:white;border:none}
   <div id="countdown"></div>
 </div>
 
+<!-- ===== التخطيط ===== -->
 <div id="program" class="page">
   <input id="planText" placeholder="اسم الخطة">
   <input type="time" id="planTime">
@@ -143,12 +146,29 @@ button{background:var(--main);color:white;border:none}
   <div id="plans"></div>
 </div>
 
+<!-- ===== التنفيذ ===== -->
 <div id="app" class="page">
   <textarea id="doneText"></textarea>
   <button onclick="addDone()">حفظ</button>
   <div id="doneList"></div>
 </div>
 
+<!-- ===== المواد ===== -->
+<div id="subjects" class="container page">
+  <div class="card" onclick="openSubject('arabic')">📘 العربية</div>
+  <div class="card" onclick="openSubject('math')">🧮 الرياضيات</div>
+  <div class="card" onclick="openSubject('science')">🧪 العلوم</div>
+  <div class="card" onclick="openSubject('physics')">⚡ الفيزياء</div>
+  <div class="card" onclick="openSubject('history')">🏛️ التاريخ</div>
+  <div class="card" onclick="openSubject('geo')">🌍 الجغرافيا</div>
+</div>
+
+<!-- ===== الدروس ===== -->
+<div id="lessons" class="page">
+  <div id="lessonList" class="container"></div>
+</div>
+
+<!-- ===== الإعدادات ===== -->
 <div id="settings" class="page">
   <button onclick="theme('#2b0b0b','#ff5722')">🔥 ناري</button>
   <button onclick="snowTheme()">❄️ ثلجي</button>
@@ -158,22 +178,27 @@ button{background:var(--main);color:white;border:none}
 </div>
 
 <script>
-const pages=["home","program","app","settings"];
+/* الصفحات */
+const pages=["home","program","app","settings","subjects","lessons"];
 function show(id){
   pages.forEach(p=>document.getElementById(p).style.display="none");
-  document.getElementById(id).style.display=id==="home"?"grid":"block";
+  document.getElementById(id).style.display=
+    (id==="home"||id==="subjects")?"grid":"block";
 }
 function home(){show("home")}
 function openProgram(){show("program")}
 function openApp(){show("app")}
 function settings(){show("settings")}
+function openSubjects(){show("subjects")}
 
+/* الساعة */
 setInterval(()=>{
   const n=new Date();
   clock.textContent=n.toLocaleTimeString();
   date.textContent=n.toLocaleDateString("ar-DZ");
 },1000);
 
+/* التخطيط والتنفيذ */
 function addPlan(){
   if(!planText.value||!planTime.value)return;
   plans.innerHTML+=`<div class="item">${planText.value}</div>`;
@@ -184,14 +209,14 @@ function addDone(){
   doneList.innerHTML+=`<div class="item">${doneText.value}</div>`;
   doneText.value="";
 }
+
+/* السمات */
 function theme(bg,main){
   document.body.className="";
   document.documentElement.style.setProperty("--bg",bg);
   document.documentElement.style.setProperty("--main",main);
   document.querySelectorAll(".lantern,.snowflake").forEach(e=>e.remove());
 }
-
-/* ===== رمضان ===== */
 function ramadanTheme(){
   theme("#fff8c4","#ffc107");
   document.body.classList.add("ramadan-bg");
@@ -204,8 +229,6 @@ function ramadanTheme(){
     document.body.appendChild(l);
   }
 }
-
-/* ===== ثلج بنجوم ===== */
 function snowTheme(){
   theme("#0b1f33","#1e88e5");
   for(let i=0;i<15;i++){
@@ -216,6 +239,24 @@ function snowTheme(){
     s.style.animationDuration=6+Math.random()*6+"s";
     document.body.appendChild(s);
   }
+}
+
+/* ===== المواد + الدروس ===== */
+const subjects={
+  arabic:["النصوص الأدبية","القواعد","الصرف","التعبير الكتابي","المحفوظات"],
+  math:["الأعداد","المعادلات","الدوال","الإحصاء","الهندسة"],
+  science:["التغذية","الهضم","التنفس","الدوران الدموي","الوراثة"],
+  physics:["المادة","الكتلة والحجم","الكثافة","الكهرباء","الطاقة"],
+  history:["الاحتلال","المقاومة","ثورة نوفمبر","مراحل الثورة","الاستقلال"],
+  geo:["الموقع الجغرافي","السكان","الموارد","الفلاحة","الصناعة"]
+};
+
+function openSubject(name){
+  show("lessons");
+  lessonList.innerHTML="";
+  subjects[name].forEach(d=>{
+    lessonList.innerHTML+=`<div class="card">${d}</div>`;
+  });
 }
 </script>
 
