@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="app-version" content="1.0.2">
-<title>Study Way 2</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b1f33">
+<title>Study Way 2 - Spring Edition</title>
 
 <style>
 :root{
@@ -18,9 +15,11 @@
 }
 body{
   margin:0;
-  font-family:Arial;
+  font-family: Arial, sans-serif;
   background:var(--bg);
   color:var(--text);
+  overflow-x: hidden;
+  transition: background 0.5s ease;
 }
 
 /* ===== الأساس ===== */
@@ -48,15 +47,18 @@ body{
   padding:30px 10px;
   text-align:center;
   cursor:pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 .page{display:none;padding:15px}
 textarea,input,button,select{
   width:100%;
-  padding:10px;
+  padding:12px;
   margin-top:10px;
   border-radius:8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
-button{background:var(--main);color:white;border:none}
+button{background:var(--main);color:white;border:none;cursor:pointer;font-weight:bold}
 .item{
   background:#fff;color:#000;padding:10px;margin-top:10px;
   border-radius:10px;position:relative;
@@ -70,46 +72,27 @@ button{background:var(--main);color:white;border:none}
   background:linear-gradient(135deg,#ff5722,#ff9800);
   padding:20px;border-radius:18px;margin:15px;text-align:center;
 }
-.footer{text-align:center;padding:15px}
 
-/* ===== رمضان ===== */
-.ramadan-bg{
-  background:linear-gradient(180deg,#fff8c4,#ffd54f);
-}
-.ramadan-bg::after{
-  content:"☾";
-  position:fixed;
-  top:20px;
-  right:20px;
-  font-size:90px;
-  color:rgba(255,193,7,.6);
-  pointer-events:none;
-}
-.ramadan-btn{
-  background:linear-gradient(135deg,#ffeb3b,#ffc107)!important;
-  color:#3b2a00!important;
-}
-.lantern{
-  position:fixed;
-  top:-50px;
-  font-size:26px;
-  animation:fall 10s linear infinite;
-  pointer-events:none;
-}
-
-/* ===== ثلج ===== */
-.snowflake{
-  position:fixed;
-  top:-40px;
-  font-size:20px;
-  animation:fall 9s linear infinite;
-  pointer-events:none;
-  opacity:.9;
+/* ===== العناصر المتساقطة (ثلج، فانوس، ورد) ===== */
+.falling-element {
+  position: fixed;
+  top: -50px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: fall linear infinite;
 }
 
 @keyframes fall{
-  to{transform:translateY(110vh)}
+  to{transform:translateY(110vh) rotate(360deg)}
 }
+
+/* ===== سمة الربيع ===== */
+.spring-bg {
+  background: linear-gradient(180deg, #e8f5e9, #c8e6c9) !important;
+  color: #1b5e20 !important;
+}
+
+/* ===== صورة الشكر ===== */
 .thanks-img {
   width: 100%;
   max-width: 300px;
@@ -123,9 +106,9 @@ button{background:var(--main);color:white;border:none}
 <body onload="loadAll()">
 
 <div class="header">
-  <span onclick="home()">⬅️</span>
+  <span onclick="home()" style="cursor:pointer">⬅️</span>
   <span class="title">📘 Study Way</span>
-  <span onclick="settings()">⚙️</span>
+  <span onclick="settings()" style="cursor:pointer">⚙️</span>
 </div>
 
 <div class="clock" id="clock">
@@ -141,7 +124,7 @@ button{background:var(--main);color:white;border:none}
 
 <div class="battle">
   ⚔️ معركة الفصل
-  <div id="countdown"></div>
+  <div id="countdown">الموسم الدراسي مستمر!</div>
 </div>
 
 <div id="program" class="page">
@@ -152,14 +135,14 @@ button{background:var(--main);color:white;border:none}
     <option value="🎮 وقت اللعب">🎮 وقت اللعب</option>
   </select>
   <input type="time" id="planTime">
-  <button onclick="addPlan()">إضافة</button>
+  <button onclick="addPlan()">إضافة للخطة</button>
   <div id="plans"></div>
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_G976H7K2V_v-zYw4eS-6I1FhO7tXn6vF6w&s" alt="Thank you all" class="thanks-img">
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_G976H7K2V_v-zYw4eS-6I1FhO7tXn6vF6w&s" alt="Thank you" class="thanks-img">
 </div>
 
 <div id="app" class="page">
-  <textarea id="doneText"></textarea>
-  <button onclick="addDone()">حفظ</button>
+  <textarea id="doneText" placeholder="ماذا أنجزت اليوم؟"></textarea>
+  <button onclick="addDone()">حفظ الإنجاز</button>
   <div id="doneList"></div>
 </div>
 
@@ -177,109 +160,141 @@ button{background:var(--main);color:white;border:none}
 </div>
 
 <div id="settings" class="page">
-  <button onclick="saveTheme('fire', '#2b0b0b','#ff5722')">🔥 ناري</button>
-  <button onclick="saveTheme('snow', '#0b1f33','#1e88e5')">❄️ ثلجي</button>
-  <button onclick="saveTheme('gold', '#1c1c1c','#d4af37')">🟨 ذهبي</button>
-  <button onclick="saveTheme('purple', '#2a1437','#8e24aa')">💜 بنفسجي</button>
-  <button onclick="saveTheme('ramadan')">🌙 رمضان</button>
+  <h3 style="text-align:center; color:inherit">اختر المظهر</h3>
+  <button onclick="saveTheme('spring', '#e8f5e9','#2e7d32')" style="background:#4caf50">🌸 ربيعي (جديد)</button>
+  <button onclick="saveTheme('fire', '#2b0b0b','#ff5722')" style="background:#ff5722">🔥 ناري</button>
+  <button onclick="saveTheme('snow', '#0b1f33','#1e88e5')" style="background:#1e88e5">❄️ ثلجي</button>
+  <button onclick="saveTheme('gold', '#1c1c1c','#d4af37')" style="background:#d4af37">🟨 ذهبي</button>
+  <button onclick="saveTheme('purple', '#2a1437','#8e24aa')" style="background:#8e24aa">💜 بنفسجي</button>
+  <button onclick="saveTheme('ramadan', '#fff8c4', '#ffc107')" style="background:#ffc107; color:#000">🌙 رمضان</button>
 </div>
 
 <script>
-/* الصفحات */
 const pages=["home","program","app","settings","subjects","lessons"];
+let activeInterval = null;
+
 function show(id){
   pages.forEach(p=>document.getElementById(p).style.display="none");
-  document.getElementById(id).style.display=
-    (id==="home"||id==="subjects")?"grid":"block";
+  const el = document.getElementById(id);
+  el.style.display = (id==="home"||id==="subjects"||id==="lessons") ? "grid" : "block";
 }
+
 function home(){show("home")}
 function openProgram(){show("program")}
 function openApp(){show("app")}
 function settings(){show("settings")}
 function openSubjects(){show("subjects")}
 
-/* الساعة */
+/* ساعة النظام */
 setInterval(()=>{
   const n=new Date();
-  clock.childNodes[0].nodeValue = n.toLocaleTimeString();
-  date.textContent=n.toLocaleDateString("ar-DZ");
+  document.getElementById('clock').childNodes[0].nodeValue = n.toLocaleTimeString("ar-DZ");
+  document.getElementById('date').textContent = n.toLocaleDateString("ar-DZ", {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 },1000);
 
-/* الحفظ */
+/* إدارة البيانات */
 function addPlan(){
-  if(!planTime.value)return;
+  if(!planTime.value) return;
   const id = Date.now();
-  plans.innerHTML+=`<div class="item" id="p${id}"><span>${planType.value}: ${planTime.value}</span><button class="delete-btn" onclick="removeItem('p${id}','plansData')">🗑️</button></div>`;
-  saveData('plansData', plans.innerHTML);
+  const html = `<div class="item" id="p${id}"><span>${planType.value}: ${planTime.value}</span><button class="delete-btn" onclick="removeItem('p${id}','plansData')">🗑️</button></div>`;
+  document.getElementById('plans').innerHTML += html;
+  saveData('plansData', document.getElementById('plans').innerHTML);
 }
+
 function addDone(){
-  if(!doneText.value)return;
+  if(!doneText.value) return;
   const id = Date.now();
-  doneList.innerHTML+=`<div class="item" id="d${id}"><span>${doneText.value}</span><button class="delete-btn" onclick="removeItem('d${id}','doneData')">🗑️</button></div>`;
-  saveData('doneData', doneList.innerHTML);
+  const html = `<div class="item" id="d${id}"><span>${doneText.value}</span><button class="delete-btn" onclick="removeItem('d${id}','doneData')">🗑️</button></div>`;
+  document.getElementById('doneList').innerHTML += html;
+  saveData('doneData', document.getElementById('doneList').innerHTML);
   doneText.value="";
 }
+
 function saveData(key, val) { localStorage.setItem(key, val); }
 function removeItem(id, key) {
   document.getElementById(id).remove();
   saveData(key, document.getElementById(key === 'plansData' ? 'plans' : 'doneList').innerHTML);
 }
 
+/* نظام السمات المحسن */
+function clearEffects() {
+  if(activeInterval) clearInterval(activeInterval);
+  document.querySelectorAll(".falling-element").forEach(e=>e.remove());
+  document.body.className = "";
+  document.querySelectorAll("button").forEach(b=>b.style.filter = "none");
+}
+
+function theme(bg, main, textColor = "#ffffff") {
+  clearEffects();
+  document.documentElement.style.setProperty("--bg", bg);
+  document.documentElement.style.setProperty("--main", main);
+  document.body.style.color = textColor;
+}
+
+function createFallingItem(emoji, duration) {
+  const item = document.createElement("div");
+  item.className = "falling-element";
+  item.textContent = emoji;
+  item.style.left = Math.random() * 100 + "%";
+  item.style.fontSize = (Math.random() * 20 + 15) + "px";
+  item.style.animationDuration = duration + "s";
+  document.body.appendChild(item);
+  setTimeout(() => item.remove(), duration * 1000);
+}
+
+function springTheme() {
+  theme("#e8f5e9", "#2e7d32", "#1b5e20");
+  document.body.classList.add("spring-bg");
+  const flowers = ["🌸", "🌼", "🌷", "🌹", "🍃"];
+  activeInterval = setInterval(() => {
+    createFallingItem(flowers[Math.floor(Math.random()*flowers.length)], Math.random()*5 + 5);
+  }, 600);
+}
+
+function snowTheme() {
+  theme("#0b1f33", "#1e88e5");
+  activeInterval = setInterval(() => {
+    createFallingItem("❄️", Math.random()*5 + 5);
+  }, 400);
+}
+
+function ramadanTheme() {
+  theme("#fff8c4", "#ffc107", "#3b2a00");
+  activeInterval = setInterval(() => {
+    createFallingItem("🏮", Math.random()*5 + 7);
+  }, 1000);
+}
+
 function saveTheme(type, bg, main) {
   localStorage.setItem('themeType', type);
-  if(type === 'ramadan') ramadanTheme();
+  applyTheme(type, bg, main);
+}
+
+function applyTheme(type, bg, main) {
+  if(type === 'spring') springTheme();
   else if(type === 'snow') snowTheme();
+  else if(type === 'ramadan') ramadanTheme();
   else theme(bg, main);
 }
 
 function loadAll() {
-  if(localStorage.getItem('plansData')) plans.innerHTML = localStorage.getItem('plansData');
-  if(localStorage.getItem('doneData')) doneList.innerHTML = localStorage.getItem('doneData');
-  const savedTheme = localStorage.getItem('themeType');
-  if(savedTheme === 'fire') theme('#2b0b0b','#ff5722');
-  else if(savedTheme === 'snow') snowTheme();
-  else if(savedTheme === 'gold') theme('#1c1c1c','#d4af37');
-  else if(savedTheme === 'purple') theme('#2a1437','#8e24aa');
-  else if(savedTheme === 'ramadan') ramadanTheme();
+  if(localStorage.getItem('plansData')) document.getElementById('plans').innerHTML = localStorage.getItem('plansData');
+  if(localStorage.getItem('doneData')) document.getElementById('doneList').innerHTML = localStorage.getItem('doneData');
+  
+  const savedType = localStorage.getItem('themeType') || 'snow';
+  // تعيين الألوان الافتراضية لكل نوع عند التحميل
+  const themes = {
+    'spring': ['#e8f5e9', '#2e7d32'],
+    'fire': ['#2b0b0b', '#ff5722'],
+    'snow': ['#0b1f33', '#1e88e5'],
+    'gold': ['#1c1c1c', '#d4af37'],
+    'purple': ['#2a1437', '#8e24aa'],
+    'ramadan': ['#fff8c4', '#ffc107']
+  };
+  applyTheme(savedType, themes[savedType][0], themes[savedType][1]);
 }
 
-/* السمات */
-let ramadanInterval = null;
-function theme(bg,main){
-  document.body.className="";
-  document.documentElement.style.setProperty("--bg",bg);
-  document.documentElement.style.setProperty("--main",main);
-  document.querySelectorAll(".lantern,.snowflake").forEach(e=>e.remove());
-  if(ramadanInterval) clearInterval(ramadanInterval);
-}
-function ramadanTheme(){
-  theme("#fff8c4","#ffc107");
-  document.body.classList.add("ramadan-bg");
-  document.querySelectorAll("button").forEach(b=>b.classList.add("ramadan-btn"));
-  if(ramadanInterval) clearInterval(ramadanInterval);
-  ramadanInterval = setInterval(()=>{
-    let l=document.createElement("div");
-    l.className="lantern";
-    l.textContent="🏮";
-    l.style.left=Math.random()*100+"%";
-    l.style.animationDuration=(6+Math.random()*6)+"s";
-    document.body.appendChild(l);
-    setTimeout(()=>l.remove(),12000);
-  },1200);
-}
-function snowTheme(){
-  theme("#0b1f33","#1e88e5");
-  for(let i=0;i<15;i++){
-    let s=document.createElement("div");
-    s.className="snowflake";
-    s.textContent="❄️";
-    s.style.left=Math.random()*100+"%";
-    s.style.animationDuration=6+Math.random()*6+"s";
-    document.body.appendChild(s);
-  }
-}
-
-/* ===== المواد + الدروس الأصلي ===== */
+/* المواد والدروس */
 const subjects={
   arabic:["النصوص الأدبية","القواعد","الصرف","التعبير الكتابي","المحفوظات"],
   math:["الأعداد","المعادلات","الدوال","الإحصاء","الهندسة"],
@@ -291,9 +306,10 @@ const subjects={
 
 function openSubject(name){
   show("lessons");
-  lessonList.innerHTML="";
+  const list = document.getElementById("lessonList");
+  list.innerHTML="";
   subjects[name].forEach(d=>{
-    lessonList.innerHTML+=`<div class="card" onclick="this.style.background='#ccc'">${d}</div>`;
+    list.innerHTML+=`<div class="card" onclick="this.style.background='#a5d6a7'">${d}</div>`;
   });
 }
 </script>
