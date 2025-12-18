@@ -21,7 +21,6 @@ body{
   font-family:Arial;
   background:var(--bg);
   color:var(--text);
-  min-height: 100vh;
 }
 
 /* ===== الأساس ===== */
@@ -51,30 +50,31 @@ body{
   cursor:pointer;
 }
 .page{display:none;padding:15px}
-textarea,input,button{
+textarea,input,button,select{
   width:100%;
   padding:10px;
   margin-top:10px;
   border-radius:8px;
 }
-button{background:var(--main);color:white;border:none;cursor:pointer}
+button{background:var(--main);color:white;border:none}
 .item{
-  background:#fff;color:#000;padding:15px 10px;margin-top:10px;
+  background:#fff;color:#000;padding:10px;margin-top:10px;
   border-radius:10px;position:relative;
   display: flex; justify-content: space-between; align-items: center;
 }
 .delete-btn{
   background:none; color:red; border:none; width:auto; margin:0; 
-  cursor:pointer; font-size:18px; padding:5px;
+  cursor:pointer; font-size:18px;
 }
 .battle{
   background:linear-gradient(135deg,#ff5722,#ff9800);
   padding:20px;border-radius:18px;margin:15px;text-align:center;
 }
+.footer{text-align:center;padding:15px}
 
 /* ===== رمضان ===== */
 .ramadan-bg{
-  background:linear-gradient(180deg,#fff8c4,#ffd54f)!important;
+  background:linear-gradient(180deg,#fff8c4,#ffd54f);
 }
 .ramadan-bg::after{
   content:"☾";
@@ -95,7 +95,6 @@ button{background:var(--main);color:white;border:none;cursor:pointer}
   font-size:26px;
   animation:fall 10s linear infinite;
   pointer-events:none;
-  z-index: 9999;
 }
 
 /* ===== ثلج ===== */
@@ -110,6 +109,13 @@ button{background:var(--main);color:white;border:none;cursor:pointer}
 
 @keyframes fall{
   to{transform:translateY(110vh)}
+}
+.thanks-img {
+  width: 100%;
+  max-width: 300px;
+  display: block;
+  margin: 20px auto;
+  border-radius: 10px;
 }
 </style>
 </head>
@@ -139,14 +145,20 @@ button{background:var(--main);color:white;border:none;cursor:pointer}
 </div>
 
 <div id="program" class="page">
-  <input id="planText" placeholder="اسم الخطة">
+  <select id="planType">
+    <option value="🌙 وقت النوم">🌙 وقت النوم</option>
+    <option value="☀️ وقت الاستيقاظ">☀️ وقت الاستيقاظ</option>
+    <option value="📖 وقت المراجعة">📖 وقت المراجعة</option>
+    <option value="🎮 وقت اللعب">🎮 وقت اللعب</option>
+  </select>
   <input type="time" id="planTime">
   <button onclick="addPlan()">إضافة</button>
   <div id="plans"></div>
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_G976H7K2V_v-zYw4eS-6I1FhO7tXn6vF6w&s" alt="Thank you all" class="thanks-img">
 </div>
 
 <div id="app" class="page">
-  <textarea id="doneText" placeholder="ماذا أنجزت اليوم؟"></textarea>
+  <textarea id="doneText"></textarea>
   <button onclick="addDone()">حفظ</button>
   <div id="doneList"></div>
 </div>
@@ -170,7 +182,6 @@ button{background:var(--main);color:white;border:none;cursor:pointer}
   <button onclick="saveTheme('gold', '#1c1c1c','#d4af37')">🟨 ذهبي</button>
   <button onclick="saveTheme('purple', '#2a1437','#8e24aa')">💜 بنفسجي</button>
   <button onclick="saveTheme('ramadan')">🌙 رمضان</button>
-  <button style="background: grey; margin-top: 30px;" onclick="clearData()">⚠️ مسح كل البيانات</button>
 </div>
 
 <script>
@@ -190,32 +201,25 @@ function openSubjects(){show("subjects")}
 /* الساعة */
 setInterval(()=>{
   const n=new Date();
-  clock.textContent=n.toLocaleTimeString();
+  clock.childNodes[0].nodeValue = n.toLocaleTimeString();
   date.textContent=n.toLocaleDateString("ar-DZ");
 },1000);
 
-/* --- نظام الحفظ الذكي --- */
-
+/* الحفظ */
 function addPlan(){
-  if(!planText.value||!planTime.value)return;
+  if(!planTime.value)return;
   const id = Date.now();
-  const html = `<div class="item" id="p${id}"><span>⏰ ${planTime.value} - ${planText.value}</span><button class="delete-btn" onclick="removeItem('p${id}','plansData')">🗑️</button></div>`;
-  plans.innerHTML += html;
+  plans.innerHTML+=`<div class="item" id="p${id}"><span>${planType.value}: ${planTime.value}</span><button class="delete-btn" onclick="removeItem('p${id}','plansData')">🗑️</button></div>`;
   saveData('plansData', plans.innerHTML);
-  planText.value="";planTime.value="";
 }
-
 function addDone(){
   if(!doneText.value)return;
   const id = Date.now();
-  const html = `<div class="item" id="d${id}"><span>✅ ${doneText.value}</span><button class="delete-btn" onclick="removeItem('d${id}','doneData')">🗑️</button></div>`;
-  doneList.innerHTML += html;
+  doneList.innerHTML+=`<div class="item" id="d${id}"><span>${doneText.value}</span><button class="delete-btn" onclick="removeItem('d${id}','doneData')">🗑️</button></div>`;
   saveData('doneData', doneList.innerHTML);
   doneText.value="";
 }
-
 function saveData(key, val) { localStorage.setItem(key, val); }
-
 function removeItem(id, key) {
   document.getElementById(id).remove();
   saveData(key, document.getElementById(key === 'plansData' ? 'plans' : 'doneList').innerHTML);
@@ -223,20 +227,14 @@ function removeItem(id, key) {
 
 function saveTheme(type, bg, main) {
   localStorage.setItem('themeType', type);
-  if(type === 'ramadan') {
-    ramadanTheme();
-  } else if(type === 'snow') {
-    snowTheme();
-  } else {
-    theme(bg, main);
-  }
+  if(type === 'ramadan') ramadanTheme();
+  else if(type === 'snow') snowTheme();
+  else theme(bg, main);
 }
 
 function loadAll() {
   if(localStorage.getItem('plansData')) plans.innerHTML = localStorage.getItem('plansData');
   if(localStorage.getItem('doneData')) doneList.innerHTML = localStorage.getItem('doneData');
-  
-  // تحميل السمة المحفوظة
   const savedTheme = localStorage.getItem('themeType');
   if(savedTheme === 'fire') theme('#2b0b0b','#ff5722');
   else if(savedTheme === 'snow') snowTheme();
@@ -245,16 +243,8 @@ function loadAll() {
   else if(savedTheme === 'ramadan') ramadanTheme();
 }
 
-function clearData() {
-  if(confirm("هل تريد مسح جميع البيانات والخلفيات؟")) {
-    localStorage.clear();
-    location.reload();
-  }
-}
-
 /* السمات */
 let ramadanInterval = null;
-
 function theme(bg,main){
   document.body.className="";
   document.documentElement.style.setProperty("--bg",bg);
@@ -262,7 +252,6 @@ function theme(bg,main){
   document.querySelectorAll(".lantern,.snowflake").forEach(e=>e.remove());
   if(ramadanInterval) clearInterval(ramadanInterval);
 }
-
 function ramadanTheme(){
   theme("#fff8c4","#ffc107");
   document.body.classList.add("ramadan-bg");
@@ -278,7 +267,6 @@ function ramadanTheme(){
     setTimeout(()=>l.remove(),12000);
   },1200);
 }
-
 function snowTheme(){
   theme("#0b1f33","#1e88e5");
   for(let i=0;i<15;i++){
@@ -291,7 +279,7 @@ function snowTheme(){
   }
 }
 
-/* المواد والدروس */
+/* ===== المواد + الدروس الأصلي ===== */
 const subjects={
   arabic:["النصوص الأدبية","القواعد","الصرف","التعبير الكتابي","المحفوظات"],
   math:["الأعداد","المعادلات","الدوال","الإحصاء","الهندسة"],
@@ -300,11 +288,12 @@ const subjects={
   history:["الاحتلال","المقاومة","ثورة نوفمبر","مراحل الثورة","الاستقلال"],
   geo:["الموقع الجغرافي","السكان","الموارد","الفلاحة","الصناعة"]
 };
+
 function openSubject(name){
   show("lessons");
   lessonList.innerHTML="";
   subjects[name].forEach(d=>{
-    lessonList.innerHTML+=`<div class="card">${d}</div>`;
+    lessonList.innerHTML+=`<div class="card" onclick="this.style.background='#ccc'">${d}</div>`;
   });
 }
 </script>
