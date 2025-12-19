@@ -1,10 +1,8 @@
-const CACHE_NAME = "studyway2-v2";
-
+const CACHE_NAME = "studyway-v3"; // غيرنا الرقم لـ v3 لإجبار التحديث
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icon-192.png",
   "./icon.svg"
 ];
 
