@@ -56,15 +56,15 @@ body {
   transition: transform 0.2s ease, background 0.2s ease;
   border: 1px solid rgba(255,255,255,0.05);
   font-weight: 600;
-  will-change: transform; /* تحسين الأداء */
+  will-change: transform;
 }
 
 .card:active { transform: scale(0.95); background: var(--main); }
 
-/* زر المعركة المطور - لا يسبب ثقل */
+/* زر المعركة المتوهج - بدون تغيير المسمى */
 .battle-btn {
   position: relative;
-  background: linear-gradient(135deg, #ff5722, #e64a19);
+  background: linear-gradient(135deg, #ff1744, #e64a19);
   padding: 20px;
   border-radius: 14px;
   margin: 15px;
@@ -74,7 +74,7 @@ body {
   border: none;
   color: white;
   z-index: 1;
-  box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
+  box-shadow: 0 0 15px #ff1744;
 }
 
 .battle-btn::after {
@@ -82,14 +82,15 @@ body {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   border-radius: 14px;
-  box-shadow: 0 0 15px #ff5722;
-  animation: glow-simple 1.5s infinite alternate;
+  background: inherit;
+  filter: blur(12px);
   z-index: -1;
+  animation: glow-pulse 1.2s infinite alternate;
 }
 
-@keyframes glow-simple {
-  from { opacity: 0.4; }
-  to { opacity: 1; }
+@keyframes glow-pulse {
+  from { opacity: 0.5; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.03); filter: blur(18px); }
 }
 
 button {
@@ -119,18 +120,20 @@ textarea, input, select {
   border-radius: 10px; display: flex; justify-content: space-between; align-items: center;
 }
 
-/* العناصر المتساقطة - محسنة للسلاسة */
 .falling-element {
   position: fixed; top: -50px; pointer-events: none; z-index: 999;
-  will-change: transform;
-  animation: fall linear forwards;
+  will-change: transform; animation: fall linear forwards;
 }
 
-@keyframes fall {
-  to { transform: translate3d(0, 110vh, 0) rotate(360deg); }
-}
+@keyframes fall { to { transform: translate3d(0, 110vh, 0) rotate(360deg); } }
 
-.coming-soon { text-align: center; padding: 40px 10px; }
+.math-q-box {
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  border: 1px solid var(--main);
+}
 </style>
 </head>
 
@@ -152,12 +155,25 @@ textarea, input, select {
     <div class="card" onclick="openProgram()">التخطيط</div>
     <div class="card" onclick="openApp()">التنفيذ</div>
     <div class="card" onclick="openSubjects()">المواد</div>
+    <div class="card" onclick="openMathChallenge()">تحدي الرياضيات</div>
   </div>
   <div class="battle-btn" onclick="openBattle()">معركة الفصل الدراسي</div>
 </div>
 
+<div id="mathPage" class="page">
+  <div class="math-q-box">
+    <h3 id="mType">تمرين</h3>
+    <p id="mQuestion" style="font-size: 20px; min-height: 50px;"></p>
+    <input type="text" id="mInput" placeholder="اكتب الحل هنا..." style="color: black;">
+    <div id="mFeedback" style="margin-top: 10px; font-weight: bold;"></div>
+    <button onclick="checkM()" style="margin-top: 15px; background: #4caf50;">تحقق</button>
+    <button onclick="nextM()" style="margin-top: 10px; background: #1e88e5;">السؤال التالي</button>
+  </div>
+  <button onclick="home()" style="margin-top: 20px; background: #666;">رجوع</button>
+</div>
+
 <div id="battlePage" class="page">
-  <div class="coming-soon">
+  <div class="coming-soon" style="text-align: center; padding: 40px 10px;">
     <div style="font-size: 50px;">🚀</div>
     <h2>قريباً</h2>
     <p>الميزة قيد التطوير لتكون سلسة وسريعة.</p>
@@ -196,8 +212,32 @@ textarea, input, select {
 </div>
 
 <script>
-const pages=["home","program","app","settings","subjects","lessons","battlePage"];
+const pages=["home","program","app","settings","subjects","lessons","battlePage","mathPage"];
 let activeInterval = null;
+let currentM = null;
+
+const mathData = [
+  {t:"تمرين", q:"PGCD(105, 45)", a:"15"}, {t:"تمرين", q:"√50 + √18", a:"8√2"},
+  {t:"تمرين", q:"2x + 5 = 15", a:"5"}, {t:"تمرين", q:"(x + 3)²", a:"x²+6x+9"},
+  {t:"تمرين", q:"(x - 2)(x + 5) = 0", a:"2,-5"}, {t:"تمرين", q:"x/4 = 9/6", a:"6"},
+  {t:"تمرين", q:"120/48 (كسر مختزل)", a:"5/2"}, {t:"تمرين", q:"cos(A)=0.5، الزاوية؟", a:"60"},
+  {t:"تمرين", q:"x+y=10, x-y=2", a:"6,4"}, {t:"تمرين", q:"(3√2)²", a:"18"},
+  {t:"تمرين", q:"ميل y=3x+1", a:"3"}, {t:"تمرين", q:"√144 + √81", a:"21"},
+  {t:"تمرين", q:"0.00056 (شكل علمي)", a:"5.6*10^-4"}, {t:"تمرين", q:"3x < 12", a:"x<4"},
+  {t:"تمرين", q:"معامل f(x)=-5x", a:"-5"}, {t:"تمرين", q:"√75", a:"5√3"},
+  {t:"تمرين", q:"x² = 16", a:"4,-4"}, {t:"تمرين", q:"PGCD(18, 12)", a:"6"},
+  {t:"تمرين", q:"(x-1)²", a:"x²-2x+1"}, {t:"تمرين", q:"tan(45°)", a:"1"},
+  {t:"مسألة", q:"ثمن 3 أقلام 45دج، ثمن 7؟", a:"105"}, {t:"مسألة", q:"محيط مستطيل طوله 10 وعرضه 5؟", a:"30"},
+  {t:"مسألة", q:"خزان 40% زاد بـ 20ل صار 60%. سعته؟", a:"100"}, {t:"مسألة", q:"قسم 1200 بنسبة 2:3. حصة الأكبر؟", a:"720"},
+  {t:"مسألة", q:"قسم فيه 30 تلميذ، 12 ذكور. % للإناث؟", a:"60%"}, {t:"مسألة", q:"مربع مساحته 400م². طول سياجه؟", a:"80"},
+  {t:"مسألة", q:"سيارة 80كم/سا، كم تقطع في 2.5 ساعة؟", a:"200"}, {t:"مسألة", q:"حذاء 3000دج خفض بـ 20%. السعر؟", a:"2400"},
+  {t:"مسألة", q:"AB=3, BC=5 في مثلث قائم. الوتر؟", a:"5"}, {t:"مسألة", q:"عددان مجموعهما 25 وفرقهما 5؟", a:"15,10"},
+  {t:"مسألة", q:"f(2)=6 (دالة خطية)، أوجد f(5)؟", a:"15"}, {t:"مسألة", q:"حقل مساحته 200 وعرضه 10. محيطه؟", a:"60"},
+  {t:"مسألة", q:"مبلغ 1500 بعد تخفيض 10%. الأصلي؟", a:"1666.6"}, {t:"مسألة", q:"دائرة محيطها 31.4. قطرها؟", a:"10"},
+  {t:"مسألة", q:"متوسط 10, 14, 11 وعلامة x هو 12. x؟", a:"13"}, {t:"مسألة", q:"مثلث قاعدته 20 وارتفاعه 15. مساحته؟", a:"150"},
+  {t:"مسألة", q:"5ل في دقيقتين، كم لملء 25ل؟", a:"10"}, {t:"مسألة", q:"سعر زاد من 100 لـ 125. نسبة الزيادة؟", a:"25%"},
+  {t:"مسألة", q:"مكعب ضلعه 3. حجمه؟", a:"27"}, {t:"مسألة", q:"زوايا مثلث: 90، 30. الثالثة؟", a:"60"}
+];
 
 function show(id){
   pages.forEach(p=>document.getElementById(p).style.display="none");
@@ -211,6 +251,21 @@ function openApp(){show("app")}
 function settings(){show("settings")}
 function openSubjects(){show("subjects")}
 function openBattle(){show("battlePage")}
+
+function openMathChallenge(){ show("mathPage"); nextM(); }
+function nextM(){
+  currentM = mathData[Math.floor(Math.random()*mathData.length)];
+  document.getElementById('mType').textContent = currentM.t;
+  document.getElementById('mQuestion').textContent = currentM.q;
+  document.getElementById('mInput').value = "";
+  document.getElementById('mFeedback').textContent = "";
+}
+function checkM(){
+  const val = document.getElementById('mInput').value.trim();
+  const res = document.getElementById('mFeedback');
+  if(val == currentM.a){ res.style.color="#4caf50"; res.textContent="إجابة صحيحة!"; }
+  else { res.style.color="#ff1744"; res.textContent="خطأ، الحل: "+currentM.a; }
+}
 
 setInterval(()=>{
   const n=new Date();
@@ -261,13 +316,12 @@ function applyTheme(type, bg, main, text) {
   document.documentElement.style.setProperty("--bg", bg);
   document.documentElement.style.setProperty("--main", main);
   document.body.style.color = text;
-
   let emoji = type==='spring'?'🌸':type==='snow'?'❄️':type==='ramadan'?'🏮':null;
   if(emoji) {
     activeInterval = setInterval(() => {
-      if(document.hidden) return; // إيقاف التوليد إذا كان التطبيق في الخلفية
+      if(document.hidden) return;
       createFallingItem(emoji);
-    }, 1200); // زيادة الوقت لتقليل الحمل
+    }, 1200);
   }
 }
 
