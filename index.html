@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Study Way - Ultra Smooth</title>
 
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e88e5">
+
 <style>
 :root {
   --bg: #0b1f33;
@@ -212,6 +215,11 @@ textarea, input, select {
 </div>
 
 <script>
+// كود الـ Service Worker
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+
 const pages=["home","program","app","settings","subjects","lessons","battlePage","mathPage"];
 let activeInterval = null;
 let currentM = null;
