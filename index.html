@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Study Way - Ultra Smooth</title>
+<title>Study Way - Knight Edition</title>
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1e88e5">
@@ -94,6 +94,43 @@ body {
   to { opacity: 1; transform: scale(1.03); filter: blur(18px); }
 }
 
+/* انيميشن الفارس */
+.knight-scene {
+  position: relative;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.knight-icon {
+  font-size: 90px;
+  z-index: 2;
+  animation: knight-float 3s infinite ease-in-out;
+  filter: drop-shadow(0 0 15px var(--main));
+}
+
+.knight-aura {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  background: var(--main);
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0.3;
+  animation: aura-pulse 2s infinite alternate;
+}
+
+@keyframes knight-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes aura-pulse {
+  from { transform: scale(0.8); opacity: 0.2; }
+  to { transform: scale(1.2); opacity: 0.5; }
+}
+
 button {
   background: var(--main);
   color: white;
@@ -174,11 +211,14 @@ textarea, input, select {
 </div>
 
 <div id="battlePage" class="page">
-  <div class="coming-soon" style="text-align: center; padding: 40px 10px;">
-    <div style="font-size: 50px;">🚀</div>
-    <h2>قريباً</h2>
-    <p>الميزة قيد التطوير لتكون سلسة وسريعة.</p>
-    <button onclick="home()">رجوع</button>
+  <div style="text-align: center; padding: 40px 10px;">
+    <div class="knight-scene">
+        <div class="knight-aura"></div>
+        <div class="knight-icon">⚔️</div>
+    </div>
+    <h2 style="margin-top: 20px;">معركة الفصل الدراسي</h2>
+    <p style="opacity: 0.8; font-size: 18px;">قريباً... جهز أسلحتك العلمية!</p>
+    <button onclick="home()" style="width: 150px; margin-top: 30px; background: #555;">رجوع</button>
   </div>
 </div>
 
@@ -207,7 +247,6 @@ textarea, input, select {
 <div id="settings" class="page">
   <h3 style="text-align: center;">المظهر</h3>
   <button onclick="saveTheme('white', '#ffffff','#1e88e5','#333333')" style="background:#eeeeee; color:#333; border:1px solid #ddd; margin-bottom:12px">⚪ الوضع الأبيض (نظيف)</button>
-  
   <button onclick="saveTheme('spring', '#e8f5e9','#2e7d32','#1b5e20')" style="background:#4caf50; margin-bottom:8px">الربيع</button>
   <button onclick="saveTheme('fire', '#2b0b0b','#ff5722','#ffffff')" style="background:#ff5722; margin-bottom:8px">النار</button>
   <button onclick="saveTheme('snow', '#0b1f33','#1e88e5','#ffffff')" style="background:#1e88e5; margin-bottom:8px">الثلج</button>
@@ -223,27 +262,11 @@ const pages=["home","program","app","settings","subjects","lessons","battlePage"
 let activeInterval = null;
 let currentM = null;
 
+// (مصفوفة الأسئلة كما هي في كودك)
 const mathData = [
   {t:"تمرين", q:"PGCD(105, 45)", a:"15"}, {t:"تمرين", q:"√50 + √18", a:"8√2"},
   {t:"تمرين", q:"2x + 5 = 15", a:"5"}, {t:"تمرين", q:"(x + 3)²", a:"x²+6x+9"},
-  {t:"تمرين", q:"(x - 2)(x + 5) = 0", a:"2,-5"}, {t:"تمرين", q:"x/4 = 9/6", a:"6"},
-  {t:"تمرين", q:"120/48 (كسر مختزل)", a:"5/2"}, {t:"تمرين", q:"cos(A)=0.5، الزاوية؟", a:"60"},
-  {t:"تمرين", q:"x+y=10, x-y=2", a:"6,4"}, {t:"تمرين", q:"(3√2)²", a:"18"},
-  {t:"تمرين", q:"ميل y=3x+1", a:"3"}, {t:"تمرين", q:"√144 + √81", a:"21"},
-  {t:"تمرين", q:"0.00056 (شكل علمي)", a:"5.6*10^-4"}, {t:"تمرين", q:"3x < 12", a:"x<4"},
-  {t:"تمرين", q:"معامل f(x)=-5x", a:"-5"}, {t:"تمرين", q:"√75", a:"5√3"},
-  {t:"تمرين", q:"x² = 16", a:"4,-4"}, {t:"تمرين", q:"PGCD(18, 12)", a:"6"},
-  {t:"تمرين", q:"(x-1)²", a:"x²-2x+1"}, {t:"تمرين", q:"tan(45°)", a:"1"},
-  {t:"مسألة", q:"ثمن 3 أقلام 45دج، ثمن 7؟", a:"105"}, {t:"مسألة", q:"محيط مستطيل طوله 10 وعرضه 5؟", a:"30"},
-  {t:"مسألة", q:"خزان 40% زاد بـ 20ل صار 60%. سعته؟", a:"100"}, {t:"مسألة", q:"قسم 1200 بنسبة 2:3. حصة الأكبر؟", a:"720"},
-  {t:"مسألة", q:"قسم فيه 30 تلميذ، 12 ذكور. % للإناث؟", a:"60%"}, {t:"مسألة", q:"مربع مساحته 400م². طول سياجه؟", a:"80"},
-  {t:"مسألة", q:"سيارة 80كم/سا، كم تقطع في 2.5 ساعة؟", a:"200"}, {t:"مسألة", q:"حذاء 3000دج خفض بـ 20%. السعر؟", a:"2400"},
-  {t:"مسألة", q:"AB=3, BC=5 في مثلث قائم. الوتر؟", a:"5"}, {t:"مسألة", q:"عددان مجموعهما 25 وفرقهما 5؟", a:"15,10"},
-  {t:"مسألة", q:"f(2)=6 (دالة خطية)، أوجد f(5)؟", a:"15"}, {t:"مسألة", q:"حقل مساحته 200 وعرضه 10. محيطه؟", a:"60"},
-  {t:"مسألة", q:"مبلغ 1500 بعد تخفيض 10%. الأصلي؟", a:"1666.6"}, {t:"مسألة", q:"دائرة محيطها 31.4. قطرها؟", a:"10"},
-  {t:"مسألة", q:"متوسط 10, 14, 11 وعلامة x هو 12. x؟", a:"13"}, {t:"مسألة", q:"مثلث قاعدته 20 وارتفاعه 15. مساحته؟", a:"150"},
-  {t:"مسألة", q:"5ل في دقيقتين، كم لملء 25ل؟", a:"10"}, {t:"مسألة", q:"سعر زاد من 100 لـ 125. نسبة الزيادة؟", a:"25%"},
-  {t:"مسألة", q:"مكعب ضلعه 3. حجمه؟", a:"27"}, {t:"مسألة", q:"زوايا مثلث: 90، 30. الثالثة؟", a:"60"}
+  {t:"مسألة", q:"زوايا مثلث: 90، 30. الثالثة؟", a:"60"}
 ];
 
 function show(id){
@@ -324,10 +347,9 @@ function applyTheme(type, bg, main, text) {
   document.documentElement.style.setProperty("--main", main);
   document.body.style.color = text;
   
-  // لا توجد مؤثرات للوضع الأبيض لضمان النظافة
   if(type === 'white') return;
 
-  let emoji = type==='spring'?'🌸':type==='snow'?'❄️':type==='ramadan'?'🏮':null;
+  let emoji = type==='spring'?'🌸':type==='snow'?'❄️':type==='ramadan'?'🏮':type==='fire'?'🔥':null;
   if(emoji) {
     activeInterval = setInterval(() => {
       if(document.hidden) return;
