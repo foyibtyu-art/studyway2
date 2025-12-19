@@ -1,4 +1,6 @@
-const CACHE_NAME = "studyway-v3"; // غيرنا الرقم لـ v3 لإجبار التحديث
+// قمنا بتغيير الإصدار إلى v4 لإجبار التطبيق على التحديث
+const CACHE_NAME = "studyway-v4"; 
+
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
@@ -6,15 +8,17 @@ const FILES_TO_CACHE = [
   "./icon.svg"
 ];
 
+// التثبيت وحذف الانتظار
 self.addEventListener("install", (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(FILES_TO_CACHE);
     })
   );
-  self.skipWaiting();
+  self.skipWaiting(); // هذه الإضافة تجعل التحديث فورياً
 });
 
+// تفعيل النسخة الجديدة وحذف الكاش القديم تماماً
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -27,7 +31,7 @@ self.addEventListener("activate", (e) => {
       );
     })
   );
-  self.clients.claim();
+  self.clients.claim(); // تجعل العامل الجديد يسيطر على التطبيق فوراً
 });
 
 self.addEventListener("fetch", (e) => {
