@@ -26,7 +26,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* الهيدر */
 .header {
   background: var(--main);
   padding: 12px 20px;
@@ -64,7 +63,6 @@ body {
 
 .card:active { transform: scale(0.95); background: var(--main); }
 
-/* زر المعركة المتوهج - بدون تغيير المسمى */
 .battle-btn {
   position: relative;
   background: linear-gradient(135deg, #ff1744, #e64a19);
@@ -192,7 +190,7 @@ textarea, input, select {
 </div>
 
 <div id="app" class="page">
-  <textarea id="doneText" placeholder="ماذا فعلت اليوم?"></textarea>
+  <textarea id="doneText" placeholder="ماذا فعلت اليوم؟"></textarea>
   <button onclick="addDone()">حفظ</button>
   <div id="doneList"></div>
 </div>
@@ -208,7 +206,8 @@ textarea, input, select {
 
 <div id="settings" class="page">
   <h3 style="text-align: center;">المظهر</h3>
-  <button onclick="saveTheme('white', '#ffffff','#1e88e5','#333333')" style="background:#eeeeee; color:#333; border:1px solid #ddd; margin-bottom:8px">الوضع الأبيض</button>
+  <button onclick="saveTheme('white', '#ffffff','#1e88e5','#333333')" style="background:#eeeeee; color:#333; border:1px solid #ddd; margin-bottom:12px">⚪ الوضع الأبيض (نظيف)</button>
+  
   <button onclick="saveTheme('spring', '#e8f5e9','#2e7d32','#1b5e20')" style="background:#4caf50; margin-bottom:8px">الربيع</button>
   <button onclick="saveTheme('fire', '#2b0b0b','#ff5722','#ffffff')" style="background:#ff5722; margin-bottom:8px">النار</button>
   <button onclick="saveTheme('snow', '#0b1f33','#1e88e5','#ffffff')" style="background:#1e88e5; margin-bottom:8px">الثلج</button>
@@ -216,7 +215,6 @@ textarea, input, select {
 </div>
 
 <script>
-// كود الـ Service Worker
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
@@ -326,7 +324,7 @@ function applyTheme(type, bg, main, text) {
   document.documentElement.style.setProperty("--main", main);
   document.body.style.color = text;
   
-  // لا توجد مؤثرات للوضع الأبيض
+  // لا توجد مؤثرات للوضع الأبيض لضمان النظافة
   if(type === 'white') return;
 
   let emoji = type==='spring'?'🌸':type==='snow'?'❄️':type==='ramadan'?'🏮':null;
