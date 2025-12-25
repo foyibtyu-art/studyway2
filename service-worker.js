@@ -1,21 +1,21 @@
-// قمنا بتغيير الإصدار إلى v4 لإجبار التطبيق على التحديث
-const CACHE_NAME = "studyway-v4"; 
+// تغيير الإصدار إلى v5 لفرض التحديث على جميع المستخدمين
+const CACHE_NAME = "studyway-v5";
 
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icon.svg"
+  "./icon.svg" // تأكد من وجود هذا الملف في المستودع لعدم حدوث خطأ
 ];
 
-// التثبيت وحذف الانتظار
+// تثبيت وحفظ الملفات في الكاش
 self.addEventListener("install", (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(FILES_TO_CACHE);
     })
   );
-  self.skipWaiting(); // هذه الإضافة تجعل التحديث فورياً
+  self.skipWaiting(); // فرض التفعيل الفوري دون انتظار إغلاق المتصفح
 });
 
 // تفعيل النسخة الجديدة وحذف الكاش القديم تماماً
@@ -31,13 +31,14 @@ self.addEventListener("activate", (e) => {
       );
     })
   );
-  self.clients.claim(); // تجعل العامل الجديد يسيطر على التطبيق فوراً
+  self.clients.claim(); // جعل العامل الجديد يسيطر على التطبيق فوراً
 });
 
+// استراتيجية جلب البيانات: التحقق من الشبكة أولاً لضمان الحصول على التحديثات
 self.addEventListener("fetch", (e) => {
   e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
+    fetch(e.request).catch(() => {
+      return caches.match(e.request);
     })
   );
 });
