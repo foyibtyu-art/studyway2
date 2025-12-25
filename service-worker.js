@@ -1,24 +1,24 @@
-// تحديث اسم الكاش لفرض النظام المستقل
-const CACHE_NAME = "studyway-pro-v5";
+// تغيير الإصدار إلى v5 لفرض التحديث على جميع المستخدمين
+const CACHE_NAME = "studyway-v5";
 
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icon.svg"
+  "./icon.svg" // تأكد من وجود هذا الملف في المستودع لعدم حدوث خطأ
 ];
 
-// تثبيت التطبيق وتخزينه في الهاتف (جعل التطبيق يعمل Offline)
+// تثبيت وحفظ الملفات في الكاش
 self.addEventListener("install", (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(FILES_TO_CACHE);
     })
   );
-  self.skipWaiting(); 
+  self.skipWaiting(); // فرض التفعيل الفوري دون انتظار إغلاق المتصفح
 });
 
-// تفعيل النظام وحذف أي ملفات قديمة من النسخ السابقة
+// تفعيل النسخة الجديدة وحذف الكاش القديم تماماً
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -31,33 +31,14 @@ self.addEventListener("activate", (e) => {
       );
     })
   );
-  self.clients.claim(); 
+  self.clients.claim(); // جعل العامل الجديد يسيطر على التطبيق فوراً
 });
 
-// الاستراتيجية التي تجعله "تطبيق" وليس "متصفح"
-// يقوم بتشغيل الملفات من الهاتف فوراً للسرعة، ويبحث عن التحديثات في الخلفية
+// استراتيجية جلب البيانات: التحقق من الشبكة أولاً لضمان الحصول على التحديثات
 self.addEventListener("fetch", (e) => {
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      // إذا كان الملف موجوداً في الهاتف، شغله فوراً
-      if (cachedResponse) {
-        // تحديث الكاش في الخلفية إذا كان هناك إنترنت لضمان الحصول على تجميلات غوغل
-        fetch(e.request).then((networkResponse) => {
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, networkResponse.clone());
-          });
-        }).catch(() => {}); // تجاهل الخطأ إذا لم يوجد إنترنت
-        
-        return cachedResponse;
-      }
-      
-      // إذا لم يكن الملف في الهاتف (مثل خطوط جديدة)، اجلبه من الإنترنت
-      return fetch(e.request).then((networkResponse) => {
-        return caches.open(CACHE_NAME).then((cache) => {
-          cache.put(e.request, networkResponse.clone());
-          return networkResponse;
-        });
-      });
+    fetch(e.request).catch(() => {
+      return caches.match(e.request);
     })
   );
 });
