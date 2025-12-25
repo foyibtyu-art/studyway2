@@ -172,6 +172,21 @@ textarea, input, select {
   text-align: center;
   border: 1px solid var(--main);
 }
+
+/* تنسيق الفوتر الجديد */
+.footer-dev {
+  text-align: center;
+  padding: 30px 10px;
+  opacity: 0.8;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.footer-dev .dev-name {
+  color: var(--main);
+  font-weight: bold;
+  display: block;
+  font-size: 16px;
+}
 </style>
 </head>
 
@@ -253,6 +268,11 @@ textarea, input, select {
   <button onclick="saveTheme('ramadan', '#fff8c4', '#ffc107','#3b2a00')" style="background:#ffc107; color:#000">رمضان</button>
 </div>
 
+<div class="footer-dev">
+    <span>المطور عمراوي بدر الدين</span>
+    
+</div>
+
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
@@ -262,7 +282,6 @@ const pages=["home","program","app","settings","subjects","lessons","battlePage"
 let activeInterval = null;
 let currentM = null;
 
-// (مصفوفة الأسئلة كما هي في كودك)
 const mathData = [
   {t:"تمرين", q:"PGCD(105, 45)", a:"15"}, {t:"تمرين", q:"√50 + √18", a:"8√2"},
   {t:"تمرين", q:"2x + 5 = 15", a:"5"}, {t:"تمرين", q:"(x + 3)²", a:"x²+6x+9"},
